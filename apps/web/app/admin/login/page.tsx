@@ -1,4 +1,5 @@
 import { LoginForm } from './LoginForm'
+import { getAdminBasePath } from '@/lib/admin-path'
 
 export const dynamic = 'force-dynamic'
 
@@ -7,6 +8,7 @@ export default function AdminLoginPage({
 }: {
   searchParams: { next?: string }
 }) {
+  const base = getAdminBasePath()
   return (
     <main>
       <div className="max-w-md mx-auto px-6 py-24">
@@ -18,7 +20,7 @@ export default function AdminLoginPage({
           운영자 비밀번호를 입력해 주세요.
         </p>
         <div className="mt-8">
-          <LoginForm next={searchParams.next ?? '/admin'} />
+          <LoginForm next={searchParams.next ?? `${base}/`} />
         </div>
       </div>
     </main>

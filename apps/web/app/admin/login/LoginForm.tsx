@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { adminBasePathFromLocation } from '@/lib/admin-path'
 
 export function LoginForm({ next }: { next: string }) {
   const router = useRouter()
@@ -14,7 +15,8 @@ export function LoginForm({ next }: { next: string }) {
     setSubmitting(true)
     setError(null)
     try {
-      const res = await fetch('/api/admin/login', {
+      const base = adminBasePathFromLocation()
+      const res = await fetch(`${base}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password }),
@@ -23,7 +25,7 @@ export function LoginForm({ next }: { next: string }) {
         const body = await res.json().catch(() => ({}))
         throw new Error(body.error ?? 'login_failed')
       }
-      router.push(next || '/admin')
+      router.push(next || `${base}/`)
       router.refresh()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'login_failed')

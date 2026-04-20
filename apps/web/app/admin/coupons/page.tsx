@@ -1,13 +1,10 @@
 import Link from 'next/link'
 import { createServiceClient } from '@temperament/db'
+import { getAdminBasePath } from '@/lib/admin-path'
+import { CouponRow } from './CouponRow'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
-
-function fmt(s: string | null | undefined): string {
-  if (!s) return '—'
-  return new Date(s).toLocaleString('ko-KR')
-}
 
 const TYPE_LABEL: Record<string, string> = {
   free: '무료',
@@ -15,11 +12,19 @@ const TYPE_LABEL: Record<string, string> = {
   fixed: '정액',
 }
 
+function fmt(s: string | null | undefined): string {
+  if (!s) return '—'
+  return new Date(s).toLocaleString('ko-KR')
+}
+
 export default async function AdminCouponsPage() {
+  const base = getAdminBasePath()
   const db = createServiceClient()
   const { data, error } = await db
     .from('coupons')
-    .select('id, code, discount_type, discount_value, max_uses, used_count, expires_at, is_active, note, created_at')
+    .select(
+      'id, code, discount_type, discount_value, max_uses, used_count, expires_at, is_active, note, created_at',
+    )
     .order('created_at', { ascending: false })
     .limit(200)
 
@@ -45,7 +50,7 @@ export default async function AdminCouponsPage() {
             <h1 className="mt-3 text-2xl font-semibold">쿠폰</h1>
           </div>
           <Link
-            href="/admin/coupons/new"
+            href={`${base}/coupons/new`}
             className="px-4 py-2 bg-[var(--ink)] text-white text-sm font-medium rounded-sm"
           >
             + 새 쿠폰
@@ -63,56 +68,47 @@ export default async function AdminCouponsPage() {
                 <th className="text-left font-normal py-3">만료</th>
                 <th className="text-left font-normal py-3">상태</th>
                 <th className="text-left font-normal py-3">메모</th>
+                <th className="py-3"></th>
               </tr>
             </thead>
             <tbody>
               {rows.length === 0 && (
                 <tr>
                   <td
-                    colSpan={7}
+                    colSpan={8}
                     className="py-10 text-center text-sm text-[var(--ink-soft)]"
                   >
                     아직 쿠폰이 없어요.{' '}
-                    <Link href="/admin/coupons/new" className="link-underline">
+                    <Link href={`${base}/coupons/new`} className="link-underline">
                       첫 쿠폰 만들기
                     </Link>
                   </td>
                 </tr>
               )}
               {rows.map((c) => {
+                const expired = c.expires_at && new Date(c.expires_at) < new Date()
                 const usage = c.max_uses != null
                   ? `${c.used_count} / ${c.max_uses}`
                   : `${c.used_count}`
-                const expired = c.expires_at && new Date(c.expires_at) < new Date()
-                const state = !c.is_active ? '비활성' : expired ? '만료' : '활성'
-                const stateClass = !c.is_active
-                  ? 'text-[var(--ink-soft)]'
-                  : expired
-                    ? 'text-yellow-700'
-                    : 'text-[var(--accent)]'
                 return (
-                  <tr
+                  <CouponRow
                     key={c.id}
-                    className="border-b border-[var(--line-soft)] hover:bg-[var(--line-soft)] transition"
-                  >
-                    <td className="py-3 font-mono tracking-wide">{c.code}</td>
-                    <td className="py-3 text-xs">{TYPE_LABEL[c.discount_type] ?? c.discount_type}</td>
-                    <td className="py-3 text-right font-mono text-xs">
-                      {c.discount_type === 'free'
+                    id={c.id}
+                    code={c.code}
+                    typeLabel={TYPE_LABEL[c.discount_type] ?? c.discount_type}
+                    valueLabel={
+                      c.discount_type === 'free'
                         ? '—'
                         : c.discount_type === 'percent'
                           ? `${c.discount_value}%`
-                          : `${c.discount_value.toLocaleString()}원`}
-                    </td>
-                    <td className="py-3 text-right font-mono text-xs">{usage}</td>
-                    <td className="py-3 font-mono text-xs text-[var(--ink-muted)]">
-                      {fmt(c.expires_at)}
-                    </td>
-                    <td className={`py-3 text-xs ${stateClass}`}>{state}</td>
-                    <td className="py-3 text-xs text-[var(--ink-muted)] truncate max-w-[220px]">
-                      {c.note ?? '—'}
-                    </td>
-                  </tr>
+                          : `${c.discount_value.toLocaleString()}원`
+                    }
+                    usage={usage}
+                    expires={fmt(c.expires_at)}
+                    expired={Boolean(expired)}
+                    isActive={c.is_active}
+                    note={c.note}
+                  />
                 )
               })}
             </tbody>

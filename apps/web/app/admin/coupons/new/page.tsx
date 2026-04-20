@@ -1,14 +1,16 @@
 import Link from 'next/link'
 import { NewCouponForm } from './NewCouponForm'
+import { getAdminBasePath } from '@/lib/admin-path'
 
 export const dynamic = 'force-dynamic'
 
 export default function NewCouponPage() {
+  const base = getAdminBasePath()
   return (
     <main>
       <div className="max-w-xl mx-auto px-6 py-12">
         <Link
-          href="/admin/coupons"
+          href={`${base}/coupons`}
           className="text-[11px] tracking-[0.2em] uppercase text-[var(--ink-soft)] link-underline"
         >
           ← Coupons

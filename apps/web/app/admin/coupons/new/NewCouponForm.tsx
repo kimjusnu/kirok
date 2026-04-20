@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { adminBasePathFromLocation } from '@/lib/admin-path'
 
 type DiscountType = 'free' | 'percent' | 'fixed'
 
@@ -42,14 +43,15 @@ export function NewCouponForm() {
         body.expiresAt = new Date(expiresAt).toISOString()
       }
 
-      const res = await fetch('/api/admin/coupons', {
+      const base = adminBasePathFromLocation()
+      const res = await fetch(`${base}/api/coupons`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? 'create_failed')
-      router.push('/admin/coupons')
+      router.push(`${base}/coupons`)
       router.refresh()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'create_failed')

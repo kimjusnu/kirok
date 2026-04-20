@@ -1,12 +1,14 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { adminBasePathFromLocation } from '@/lib/admin-path'
 
 export function LogoutButton() {
   const router = useRouter()
   async function logout() {
-    await fetch('/api/admin/logout', { method: 'POST' })
-    router.push('/admin/login')
+    const base = adminBasePathFromLocation()
+    await fetch(`${base}/api/logout`, { method: 'POST' })
+    router.push(`${base}/login`)
     router.refresh()
   }
   return (

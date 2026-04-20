@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServiceClient } from '@temperament/db'
+import { getAdminBasePath } from '@/lib/admin-path'
+import { RegenerateButton } from './RegenerateButton'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -31,6 +33,7 @@ export default async function AdminSessionDetailPage({
 }: {
   params: { id: string }
 }) {
+  const base = getAdminBasePath()
   const db = createServiceClient()
   const { data: session, error } = await db
     .from('sessions')
@@ -78,7 +81,7 @@ export default async function AdminSessionDetailPage({
         <div className="flex items-baseline justify-between">
           <div>
             <Link
-              href="/admin/sessions"
+              href={`${base}/sessions`}
               className="text-[11px] tracking-[0.2em] uppercase text-[var(--ink-soft)] link-underline"
             >
               ← Sessions
@@ -87,15 +90,20 @@ export default async function AdminSessionDetailPage({
               {session.id.slice(0, 8)}…
             </h1>
           </div>
-          {session.paid_at && (
-            <Link
-              href={`/report/${session.access_token}`}
-              target="_blank"
-              className="text-xs link-underline"
-            >
-              리포트 열기 →
-            </Link>
-          )}
+          <div className="flex items-center gap-4 text-xs">
+            {session.paid_at && results && (
+              <RegenerateButton sessionId={session.id} />
+            )}
+            {session.paid_at && (
+              <Link
+                href={`/report/${session.access_token}`}
+                target="_blank"
+                className="link-underline"
+              >
+                리포트 열기 →
+              </Link>
+            )}
+          </div>
         </div>
 
         <section className="mt-10">
