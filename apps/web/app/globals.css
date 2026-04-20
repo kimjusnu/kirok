@@ -1,3 +1,77 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --ink: #18181b;
+  --ink-muted: #52525b;
+  --ink-soft: #a1a1aa;
+  --line: #e4e4e7;
+  --line-soft: #f4f4f5;
+  --accent: #2563eb;
+  --bg: #ffffff;
+}
+
+html {
+  font-family:
+    'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+    'Apple SD Gothic Neo', 'Malgun Gothic', Roboto, sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'ss03', 'ss04', 'cv01';
+}
+
+body {
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+h1, h2, h3 {
+  letter-spacing: -0.025em;
+}
+
+::selection {
+  background: var(--ink);
+  color: #fff;
+}
+
+.rule {
+  display: block;
+  width: 48px;
+  height: 1px;
+  background: var(--ink);
+}
+
+.rule-full {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: var(--line);
+}
+
+.prose-editorial {
+  font-weight: 300;
+  line-height: 1.75;
+  color: var(--ink);
+}
+
+.prose-editorial p + p {
+  margin-top: 1.25rem;
+}
+
+.link-underline {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--ink-soft);
+  transition: text-decoration-color 150ms ease;
+}
+
+.link-underline:hover {
+  text-decoration-color: var(--ink);
+}

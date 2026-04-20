@@ -61,9 +61,9 @@ export function FactorRadar({ factors }: { factors: FactorPoint[] }) {
       {/* Score polygon */}
       <polygon
         points={polygonPoints}
-        fill="rgba(0,0,0,0.1)"
-        stroke="rgba(0,0,0,0.85)"
-        strokeWidth={2}
+        fill="rgba(37,99,235,0.08)"
+        stroke="#2563eb"
+        strokeWidth={1.5}
       />
 
       {/* Vertex dots */}
@@ -71,7 +71,7 @@ export function FactorRadar({ factors }: { factors: FactorPoint[] }) {
         const ratio = Math.max(0, Math.min(1, f.percentile / 100))
         const [x, y] = pointAt(i, total, ratio)
         return (
-          <circle key={`${f.id}-dot`} cx={x} cy={y} r={3} fill="#000" />
+          <circle key={`${f.id}-dot`} cx={x} cy={y} r={2.5} fill="#2563eb" />
         )
       })}
 
@@ -85,8 +85,9 @@ export function FactorRadar({ factors }: { factors: FactorPoint[] }) {
             y={ly}
             textAnchor="middle"
             dominantBaseline="middle"
-            className="fill-gray-700"
-            fontSize={12}
+            fill="#52525b"
+            fontSize={11}
+            style={{ letterSpacing: '0.02em' }}
           >
             {f.label}
           </text>

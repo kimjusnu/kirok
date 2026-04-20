@@ -9,12 +9,15 @@ export const dynamic = 'force-dynamic'
 
 function gate(title: string, body: string) {
   return (
-    <main className="min-h-screen bg-gray-50">
-      <div className="max-w-xl mx-auto p-8">
-        <h1 className="text-2xl font-bold">{title}</h1>
-        <p className="mt-3 text-gray-700">{body}</p>
-        <Link href="/" className="mt-6 inline-block text-sm underline text-gray-600">
-          처음으로
+    <main>
+      <div className="max-w-xl mx-auto px-6 py-16">
+        <p className="text-[11px] tracking-[0.2em] uppercase text-[var(--ink-soft)]">
+          Report
+        </p>
+        <h1 className="mt-4 text-2xl font-semibold">{title}</h1>
+        <p className="mt-3 prose-editorial text-[15px]">{body}</p>
+        <Link href="/" className="mt-8 inline-block text-sm link-underline">
+          ← 처음으로
         </Link>
       </div>
     </main>
@@ -82,7 +85,7 @@ export default async function ReportPage({
   }
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main>
       <ReportView
         sessionId={session.id}
         testNameKo={testDef.nameKo}

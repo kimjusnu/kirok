@@ -102,10 +102,10 @@ export function ReportView({
 
   if (state.kind === 'loading') {
     return (
-      <div className="max-w-2xl mx-auto p-8 text-center">
-        <div className="inline-block w-8 h-8 border-2 border-gray-300 border-t-black rounded-full animate-spin" />
-        <p className="mt-4 text-sm text-gray-600">
-          점수를 분석하고 해석을 작성하는 중…
+      <div className="max-w-xl mx-auto px-6 py-24 text-center">
+        <div className="inline-block w-6 h-6 border border-[var(--line)] border-t-[var(--ink)] rounded-full animate-spin" />
+        <p className="mt-6 prose-editorial text-sm text-[var(--ink-muted)]">
+          점수를 분석하고 해석을 작성하는 중.
           <br />
           논문 인용도 함께 가져오고 있어요 (약 10–20초).
         </p>
@@ -115,15 +115,18 @@ export function ReportView({
 
   if (state.kind === 'error') {
     return (
-      <div className="max-w-2xl mx-auto p-8">
-        <h1 className="text-2xl font-bold">리포트 생성 중 오류</h1>
-        <p className="mt-3 text-sm text-red-700 bg-red-50 p-3 rounded">
-          {state.message}
+      <div className="max-w-xl mx-auto px-6 py-16">
+        <p className="text-[11px] tracking-[0.2em] uppercase text-[var(--ink-soft)]">
+          Error
         </p>
+        <h1 className="mt-4 text-2xl font-semibold">리포트 생성 중 오류</h1>
+        <div className="mt-4 border-l-2 border-red-500 pl-4 py-2 text-sm text-red-700">
+          {state.message}
+        </div>
         <button
           type="button"
           onClick={generate}
-          className="mt-6 px-5 py-2.5 bg-black text-white rounded-md text-sm font-medium"
+          className="mt-8 px-5 py-3 bg-[var(--ink)] text-white rounded-sm text-sm font-medium"
         >
           다시 시도
         </button>
@@ -139,105 +142,133 @@ export function ReportView({
   }))
 
   return (
-    <div className="max-w-2xl mx-auto p-6 sm:p-8">
+    <div className="max-w-2xl mx-auto px-6 py-12 sm:py-16">
       <header>
-        <p className="text-xs text-gray-500">{testNameKo} · 결과 리포트</p>
-        <h1 className="mt-2 text-2xl sm:text-3xl font-bold">당신의 Big Five 프로파일</h1>
+        <p className="text-[11px] tracking-[0.2em] uppercase text-[var(--ink-soft)]">
+          Report · {testNameKo}
+        </p>
+        <h1 className="mt-4 text-3xl sm:text-4xl font-semibold tracking-tight">
+          당신의 Big Five 프로파일
+        </h1>
+        <span className="block w-12 h-px bg-[var(--ink)] mt-6" aria-hidden />
       </header>
 
-      <section className="mt-8 p-5 bg-white rounded-lg border border-gray-200">
+      <section className="mt-12">
         <FactorRadar factors={radarFactors} />
-        <p className="mt-4 text-xs text-center text-gray-500">
-          백분위 기준 (50이 평균)
+        <p className="mt-4 text-center text-[11px] tracking-[0.2em] uppercase text-[var(--ink-soft)]">
+          percentile · 50 = average
         </p>
       </section>
 
-      <section className="mt-8">
-        <h2 className="text-lg font-semibold">전체 요약</h2>
-        <p className="mt-3 text-gray-800 leading-relaxed whitespace-pre-wrap">
+      <section className="mt-16">
+        <p className="text-[11px] tracking-[0.2em] uppercase text-[var(--ink-soft)]">
+          01. Overview
+        </p>
+        <h2 className="mt-3 text-xl font-semibold">전체 요약</h2>
+        <p className="mt-5 prose-editorial text-[16px] whitespace-pre-wrap">
           {data.interpretation.overall}
         </p>
       </section>
 
-      <section className="mt-8 space-y-6">
-        <h2 className="text-lg font-semibold">요인별 해석</h2>
-        {factors.map((f) => {
-          const p = data.percentiles[f.id] ?? 50
-          const interp = data.interpretation.factors[f.id]
-          const papers = data.citations.find((c) => c.factorId === f.id)?.papers ?? []
-          return (
-            <article
-              key={f.id}
-              className="p-5 bg-white rounded-lg border border-gray-200"
-            >
-              <div className="flex items-baseline justify-between">
-                <h3 className="text-base font-semibold">{f.nameKo}</h3>
-                <div className="text-sm text-gray-600">
-                  백분위 <span className="font-semibold text-gray-900">{p}</span>
-                  <span className="ml-2 text-xs text-gray-500">({levelLabel(p)})</span>
+      <section className="mt-16">
+        <p className="text-[11px] tracking-[0.2em] uppercase text-[var(--ink-soft)]">
+          02. Factors
+        </p>
+        <h2 className="mt-3 text-xl font-semibold">요인별 해석</h2>
+
+        <div className="mt-8 divide-y divide-[var(--line)]">
+          {factors.map((f, idx) => {
+            const p = data.percentiles[f.id] ?? 50
+            const interp = data.interpretation.factors[f.id]
+            const papers = data.citations.find((c) => c.factorId === f.id)?.papers ?? []
+            return (
+              <article key={f.id} className="py-10 first:pt-0">
+                <div className="flex items-baseline justify-between">
+                  <div className="flex items-baseline gap-3">
+                    <span className="font-mono text-xs text-[var(--ink-soft)]">
+                      {String(idx + 1).padStart(2, '0')}
+                    </span>
+                    <h3 className="text-lg font-semibold">{f.nameKo}</h3>
+                  </div>
+                  <div className="text-sm text-[var(--ink-muted)]">
+                    <span className="font-mono">{p}</span>
+                    <span className="ml-2 text-[11px] text-[var(--ink-soft)] uppercase tracking-wider">
+                      {levelLabel(p)}
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <p className="mt-1 text-xs text-gray-500">{f.descriptionKo}</p>
-
-              <div className="mt-3 h-1.5 bg-gray-100 rounded overflow-hidden">
-                <div
-                  className="h-full bg-black"
-                  style={{ width: `${Math.max(0, Math.min(100, p))}%` }}
-                  aria-hidden
-                />
-              </div>
-
-              {interp && (
-                <p className="mt-4 text-gray-800 leading-relaxed whitespace-pre-wrap">
-                  {interp}
+                <p className="mt-1 text-[13px] text-[var(--ink-soft)] leading-relaxed">
+                  {f.descriptionKo}
                 </p>
-              )}
 
-              {papers.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-gray-100">
-                  <h4 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    관련 학술 논문
-                  </h4>
-                  <ul className="mt-2 space-y-2 text-sm">
-                    {papers.slice(0, 3).map((p) => (
-                      <li key={p.paperId}>
-                        <a
-                          href={
-                            p.url ??
-                            (p.doi ? `https://doi.org/${p.doi}` : '#')
-                          }
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-gray-800 underline underline-offset-2 decoration-gray-300 hover:decoration-gray-700"
-                        >
-                          {p.title}
-                        </a>
-                        <span className="ml-1 text-xs text-gray-500">{p.inline}</span>
-                      </li>
-                    ))}
-                  </ul>
+                <div className="mt-4 h-px bg-[var(--line)] relative">
+                  <div
+                    className="absolute inset-y-0 left-0 h-px bg-[var(--ink)]"
+                    style={{ width: `${Math.max(0, Math.min(100, p))}%` }}
+                    aria-hidden
+                  />
                 </div>
-              )}
-            </article>
-          )
-        })}
+
+                {interp && (
+                  <p className="mt-6 prose-editorial text-[15px] whitespace-pre-wrap">
+                    {interp}
+                  </p>
+                )}
+
+                {papers.length > 0 && (
+                  <div className="mt-6">
+                    <h4 className="text-[11px] tracking-[0.2em] uppercase text-[var(--ink-soft)]">
+                      Cited
+                    </h4>
+                    <ul className="mt-3 space-y-2 text-[13px]">
+                      {papers.slice(0, 3).map((p) => (
+                        <li key={p.paperId} className="leading-snug">
+                          <a
+                            href={
+                              p.url ?? (p.doi ? `https://doi.org/${p.doi}` : '#')
+                            }
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="link-underline"
+                          >
+                            {p.title}
+                          </a>
+                          <span className="ml-1 text-[11px] text-[var(--ink-soft)]">
+                            {p.inline}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </article>
+            )
+          })}
+        </div>
       </section>
 
       {data.interpretation.suggestions.length > 0 && (
-        <section className="mt-8 p-5 bg-gray-900 text-white rounded-lg">
-          <h2 className="text-base font-semibold">시도해 볼 만한 것</h2>
-          <ul className="mt-3 space-y-2 text-sm text-gray-100">
+        <section className="mt-16">
+          <p className="text-[11px] tracking-[0.2em] uppercase text-[var(--ink-soft)]">
+            03. Practice
+          </p>
+          <h2 className="mt-3 text-xl font-semibold">시도해 볼 만한 것</h2>
+          <ol className="mt-6 space-y-5">
             {data.interpretation.suggestions.map((s, i) => (
-              <li key={i}>· {s}</li>
+              <li key={i} className="flex gap-4">
+                <span className="font-mono text-xs text-[var(--ink-soft)] pt-1">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <p className="prose-editorial text-[15px] flex-1">{s}</p>
+              </li>
             ))}
-          </ul>
+          </ol>
         </section>
       )}
 
-      <footer className="mt-10 text-center text-[11px] text-gray-400 leading-relaxed">
-        이 결과는 학습·자기이해 목적의 참고 자료이며, 임상 진단이 아닙니다.
-        <br />
-        리포트 링크는 결제일로부터 7일간 유효합니다.
+      <footer className="mt-20 pt-8 border-t border-[var(--line)] text-[11px] text-[var(--ink-soft)] leading-relaxed">
+        이 결과는 학습·자기이해 목적의 참고 자료이며, 임상 진단이 아닙니다. 리포트
+        링크는 결제일로부터 7일간 유효합니다.
       </footer>
     </div>
   )

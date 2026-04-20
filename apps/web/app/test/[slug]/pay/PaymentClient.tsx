@@ -185,121 +185,130 @@ export function PaymentClient({
   }, [sessionId, slug, testNameKo])
 
   return (
-    <div className="max-w-xl mx-auto p-6 sm:p-8">
+    <div className="max-w-xl mx-auto px-6 py-12 sm:py-16">
       <header>
-        <h1 className="text-2xl font-bold">결제</h1>
-        <p className="mt-1 text-sm text-gray-500">{testNameKo} 리포트</p>
+        <p className="text-[11px] tracking-[0.2em] uppercase text-[var(--ink-soft)]">
+          Checkout
+        </p>
+        <h1 className="mt-4 text-3xl font-semibold">결제</h1>
+        <p className="mt-2 text-sm text-[var(--ink-muted)]">{testNameKo} · 리포트 구매</p>
       </header>
 
-      <section className="mt-6 p-5 bg-white rounded-lg border border-gray-200">
-        <div className="flex items-end justify-between">
+      <section className="mt-10 pb-8 border-b border-[var(--line)]">
+        <div className="flex items-baseline justify-between">
           <div>
-            <div className="text-sm text-gray-400 line-through">
+            <div className="text-xs text-[var(--ink-soft)] line-through">
               {anchorPriceKrw.toLocaleString()}원
             </div>
-            <div className="text-3xl font-bold">
-              {finalAmount.toLocaleString()}원
+            <div className="mt-1 text-4xl font-semibold tracking-tight">
+              {finalAmount.toLocaleString()}
+              <span className="text-lg font-normal text-[var(--ink-muted)] ml-1">원</span>
             </div>
           </div>
           {coupon.kind === 'applied' && (
-            <div className="text-right text-sm text-green-700">
+            <div className="text-right text-xs text-[var(--accent)]">
               {coupon.isFree
                 ? '쿠폰으로 무료'
-                : `${coupon.discountAmountKrw.toLocaleString()}원 할인`}
+                : `−${coupon.discountAmountKrw.toLocaleString()}원`}
             </div>
           )}
         </div>
       </section>
 
-      <section className="mt-5 p-5 bg-white rounded-lg border border-gray-200">
-        <h2 className="text-sm font-semibold">쿠폰</h2>
+      <section className="mt-8">
+        <h2 className="text-[11px] tracking-[0.2em] uppercase text-[var(--ink-soft)]">
+          Coupon
+        </h2>
         {coupon.kind === 'applied' ? (
-          <div className="mt-2 flex items-center justify-between">
+          <div className="mt-3 flex items-center justify-between py-3 border-b border-[var(--line)]">
             <div className="text-sm">
-              <span className="font-mono">{coupon.code}</span>
-              <span className="ml-2 text-gray-500">적용됨</span>
+              <span className="font-mono tracking-wide">{coupon.code}</span>
+              <span className="ml-3 text-xs text-[var(--ink-soft)]">적용됨</span>
             </div>
             <button
               type="button"
               onClick={removeCoupon}
-              className="text-xs text-gray-500 underline"
+              className="text-[11px] text-[var(--ink-soft)] link-underline"
             >
               제거
             </button>
           </div>
         ) : (
-          <div className="mt-2 flex gap-2">
+          <div className="mt-3 flex gap-2">
             <input
               type="text"
               value={couponInput}
               onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
-              placeholder="쿠폰 코드"
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm font-mono"
+              placeholder="코드 입력"
+              className="flex-1 px-3 py-2.5 border border-[var(--line)] focus:border-[var(--ink)] outline-none text-sm font-mono tracking-wide transition"
               aria-label="쿠폰 코드"
             />
             <button
               type="button"
               onClick={applyCoupon}
               disabled={coupon.kind === 'checking' || couponInput.trim().length === 0}
-              className="px-4 py-2 bg-gray-900 text-white rounded-md text-sm disabled:opacity-40"
+              className="px-5 py-2.5 bg-[var(--ink)] text-white text-sm disabled:opacity-30"
             >
-              {coupon.kind === 'checking' ? '확인 중…' : '적용'}
+              {coupon.kind === 'checking' ? '확인…' : '적용'}
             </button>
           </div>
         )}
         {coupon.kind === 'invalid' && (
-          <div className="mt-2 text-xs text-red-600">
-            사용할 수 없는 쿠폰: {coupon.reason}
+          <div className="mt-2 text-[11px] text-red-600">
+            사용할 수 없는 쿠폰 · {coupon.reason}
           </div>
         )}
       </section>
 
       {isFree ? (
-        <div className="mt-6">
+        <div className="mt-10">
           <button
             type="button"
             onClick={claimFree}
             disabled={submitting}
-            className="w-full px-5 py-3 bg-black text-white rounded-md font-medium disabled:opacity-40"
+            className="w-full px-5 py-4 bg-[var(--ink)] text-white font-medium rounded-sm disabled:opacity-40"
           >
-            {submitting ? '처리 중…' : '무료로 리포트 받기'}
+            {submitting ? '처리 중…' : '무료로 리포트 받기 →'}
           </button>
         </div>
       ) : (
         <>
           {!tossEnabled && (
-            <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-md text-sm text-yellow-900">
+            <div className="mt-10 border-l-2 border-yellow-500 pl-4 py-2 text-sm text-[var(--ink-muted)]">
               결제 모듈이 아직 설정되지 않았습니다 (NEXT_PUBLIC_TOSS_CLIENT_KEY).
-              관리자에게 문의해 주세요.
             </div>
           )}
 
-          <section
-            className={`mt-6 p-3 bg-white rounded-lg border border-gray-200 ${
-              canShowWidget ? '' : 'hidden'
-            }`}
-          >
-            <div id="payment-method" ref={methodRef} />
-            <div id="agreement" ref={agreementRef} className="mt-3" />
+          <section className={`mt-10 ${canShowWidget ? '' : 'hidden'}`}>
+            <h2 className="text-[11px] tracking-[0.2em] uppercase text-[var(--ink-soft)] mb-4">
+              Payment method
+            </h2>
+            <div className="border border-[var(--line)] p-3">
+              <div id="payment-method" ref={methodRef} />
+              <div id="agreement" ref={agreementRef} className="mt-3" />
+            </div>
             <button
               type="button"
               onClick={startTossPayment}
               disabled={!widgetsReady || submitting}
-              className="mt-4 w-full px-5 py-3 bg-black text-white rounded-md font-medium disabled:opacity-40"
+              className="mt-6 w-full px-5 py-4 bg-[var(--ink)] text-white font-medium rounded-sm disabled:opacity-40"
             >
-              {submitting ? '결제 요청 중…' : `${finalAmount.toLocaleString()}원 결제하기`}
+              {submitting ? '결제 요청 중…' : `${finalAmount.toLocaleString()}원 결제하기 →`}
             </button>
           </section>
         </>
       )}
 
       {error && (
-        <div role="alert" className="mt-4 p-3 text-sm text-red-700 bg-red-50 rounded">
-          오류: {error}
+        <div
+          role="alert"
+          className="mt-6 border-l-2 border-red-500 pl-4 py-2 text-sm text-red-700"
+        >
+          오류 · {error}
         </div>
       )}
 
-      <p className="mt-8 text-[11px] text-gray-400 leading-relaxed">
+      <p className="mt-14 pt-8 border-t border-[var(--line)] text-[11px] text-[var(--ink-soft)] leading-relaxed">
         결제 정보는 토스페이먼츠에만 전달되며, 본 사이트는 결제 수단이나 카드번호를
         저장하지 않습니다. 리포트는 결제 완료 시점부터 7일간 열람 가능합니다.
       </p>

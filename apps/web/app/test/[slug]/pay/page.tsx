@@ -11,12 +11,15 @@ type SearchParams = { sid?: string; at?: string }
 
 function renderError(title: string, body: string) {
   return (
-    <main className="min-h-screen bg-gray-50">
-      <div className="max-w-xl mx-auto p-8">
-        <h1 className="text-2xl font-bold">{title}</h1>
-        <p className="mt-3 text-gray-700">{body}</p>
-        <Link href="/" className="mt-6 inline-block text-sm underline text-gray-600">
-          처음으로
+    <main>
+      <div className="max-w-xl mx-auto px-6 py-16">
+        <p className="text-[11px] tracking-[0.2em] uppercase text-[var(--ink-soft)]">
+          Error
+        </p>
+        <h1 className="mt-4 text-2xl font-semibold">{title}</h1>
+        <p className="mt-3 prose-editorial text-[15px]">{body}</p>
+        <Link href="/" className="mt-8 inline-block text-sm link-underline">
+          ← 처음으로
         </Link>
       </div>
     </main>
@@ -64,15 +67,20 @@ export default async function PayPage({
   if (session.paid_at) {
     const at = searchParams.at
     return (
-      <main className="min-h-screen bg-gray-50">
-        <div className="max-w-xl mx-auto p-8">
-          <h1 className="text-2xl font-bold">이미 결제 완료된 세션입니다</h1>
+      <main>
+        <div className="max-w-xl mx-auto px-6 py-16">
+          <p className="text-[11px] tracking-[0.2em] uppercase text-[var(--ink-soft)]">
+            Paid
+          </p>
+          <h1 className="mt-4 text-2xl font-semibold">
+            이미 결제 완료된 세션입니다
+          </h1>
           {at ? (
             <Link
               href={`/report/${at}`}
-              className="mt-6 inline-block px-5 py-2.5 bg-black text-white rounded-md text-sm font-medium"
+              className="mt-8 inline-block px-5 py-3 bg-[var(--ink)] text-white rounded-sm text-sm font-medium"
             >
-              리포트 보기
+              리포트 보기 →
             </Link>
           ) : null}
         </div>
@@ -83,7 +91,7 @@ export default async function PayPage({
   const clientKey = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY ?? ''
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main>
       <PaymentClient
         slug={params.slug}
         testNameKo={test.nameKo}

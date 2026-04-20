@@ -9,7 +9,7 @@ export default function TestPage({ params }: { params: { slug: string } }) {
   if (!test) notFound()
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main>
       <TestRunner
         slug={params.slug}
         nameKo={test.nameKo}

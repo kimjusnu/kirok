@@ -183,42 +183,46 @@ export function TestRunner({
 
   if (!hydrated) {
     return (
-      <div className="max-w-xl mx-auto p-8 text-center text-gray-500">불러오는 중…</div>
+      <div className="max-w-xl mx-auto p-10 text-center text-sm text-[var(--ink-soft)]">
+        불러오는 중…
+      </div>
     )
   }
 
   if (!current) return null
 
   return (
-    <div className="max-w-xl mx-auto p-6 sm:p-8">
-      <header className="mb-6">
-        <div className="flex items-center justify-between text-sm text-gray-500">
-          <span>{nameKo}</span>
-          <span>
-            {cursor + 1} / {total}
+    <div className="max-w-xl mx-auto px-6 py-10 sm:py-14">
+      <header className="mb-10">
+        <div className="flex items-baseline justify-between text-xs">
+          <span className="tracking-[0.2em] uppercase text-[var(--ink-soft)]">
+            {nameKo}
+          </span>
+          <span className="font-mono text-[var(--ink-muted)]">
+            {String(cursor + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
           </span>
         </div>
-        <div className="mt-2 h-1.5 bg-gray-200 rounded overflow-hidden">
+        <div className="mt-3 h-px bg-[var(--line)] overflow-hidden">
           <div
-            className="h-full bg-black transition-all"
+            className="h-full bg-[var(--ink)] transition-all duration-300"
             style={{ width: `${((cursor + 1) / total) * 100}%` }}
             aria-hidden
           />
         </div>
-        <div className="mt-1 text-xs text-gray-400">
-          응답 완료 {answered} · 약 {estimatedMinutes}분
+        <div className="mt-2 text-[11px] text-[var(--ink-soft)]">
+          응답 {answered} · 약 {estimatedMinutes}분
         </div>
       </header>
 
-      <section
-        className="bg-white rounded-lg shadow-sm p-6 sm:p-8"
-        aria-labelledby="item-text"
-      >
-        <p id="item-text" className="text-lg sm:text-xl font-medium leading-relaxed">
+      <section aria-labelledby="item-text">
+        <p
+          id="item-text"
+          className="text-2xl sm:text-[28px] font-medium leading-[1.5] tracking-tight"
+        >
           {current.textKo}
         </p>
 
-        <div className="mt-6 grid grid-cols-1 gap-2" role="radiogroup" aria-label="응답">
+        <div className="mt-10 space-y-2" role="radiogroup" aria-label="응답">
           {SCALE_LABELS.map((opt) => {
             const isSelected = selected === opt.v
             return (
@@ -228,26 +232,32 @@ export function TestRunner({
                 role="radio"
                 aria-checked={isSelected}
                 onClick={() => choose(opt.v)}
-                className={`w-full text-left px-4 py-3 rounded-md border transition ${
+                className={`w-full text-left px-5 py-4 border transition ${
                   isSelected
-                    ? 'border-black bg-black text-white'
-                    : 'border-gray-300 hover:border-gray-500'
+                    ? 'border-[var(--ink)] bg-[var(--ink)] text-white'
+                    : 'border-[var(--line)] hover:border-[var(--ink-muted)]'
                 }`}
               >
-                <span className="inline-block w-5 text-sm opacity-60 mr-2">{opt.v}</span>
-                {opt.label}
+                <span
+                  className={`inline-block w-6 font-mono text-xs mr-3 ${
+                    isSelected ? 'opacity-60' : 'text-[var(--ink-soft)]'
+                  }`}
+                >
+                  {opt.v}
+                </span>
+                <span className="text-[15px]">{opt.label}</span>
               </button>
             )
           })}
         </div>
       </section>
 
-      <div className="mt-6 flex items-center justify-between gap-2">
+      <div className="mt-10 flex items-center justify-between gap-2">
         <button
           type="button"
           onClick={goPrev}
           disabled={cursor === 0}
-          className="px-4 py-2 text-sm disabled:opacity-40"
+          className="text-sm text-[var(--ink-muted)] disabled:opacity-30 link-underline"
         >
           ← 이전
         </button>
@@ -257,16 +267,16 @@ export function TestRunner({
             type="button"
             onClick={submit}
             disabled={!allAnswered || submitting}
-            className="px-5 py-2.5 bg-black text-white rounded-md text-sm font-medium disabled:opacity-40"
+            className="px-5 py-3 bg-[var(--ink)] text-white text-sm font-medium rounded-sm disabled:opacity-40"
           >
-            {submitting ? '제출 중…' : '제출하고 결과 보기'}
+            {submitting ? '제출 중…' : '제출하고 결과 보기 →'}
           </button>
         ) : (
           <button
             type="button"
             onClick={goNext}
             disabled={!canGoNext}
-            className="px-4 py-2 text-sm font-medium disabled:opacity-40"
+            className="text-sm font-medium disabled:opacity-30 link-underline"
           >
             다음 →
           </button>
@@ -274,16 +284,19 @@ export function TestRunner({
       </div>
 
       {error && (
-        <div role="alert" className="mt-4 p-3 text-sm text-red-700 bg-red-50 rounded">
+        <div
+          role="alert"
+          className="mt-6 border-l-2 border-red-500 pl-4 py-2 text-sm text-red-700"
+        >
           제출 중 오류: {error}. 잠시 후 다시 시도해 주세요.
         </div>
       )}
 
       {answered === total && (
-        <div className="mt-6 text-right">
+        <div className="mt-10 text-right">
           <button
             type="button"
-            className="text-xs text-gray-500 underline"
+            className="text-[11px] text-[var(--ink-soft)] link-underline"
             onClick={() => {
               if (confirm('저장된 응답을 모두 지우고 처음부터 시작할까요?')) {
                 clearSaved(slug)
@@ -297,12 +310,14 @@ export function TestRunner({
         </div>
       )}
 
-      <p className="mt-8 text-[11px] text-gray-400 leading-relaxed">
-        {translationNote}
-      </p>
-      <p className="mt-1 text-[11px] text-gray-400">
-        단축키: 1–5 선택 · ← → 이동
-      </p>
+      <div className="mt-14 pt-8 border-t border-[var(--line)]">
+        <p className="text-[11px] text-[var(--ink-soft)] leading-relaxed">
+          {translationNote}
+        </p>
+        <p className="mt-2 text-[11px] text-[var(--ink-soft)] font-mono">
+          단축키 · 1–5 선택 · ← → 이동
+        </p>
+      </div>
     </div>
   )
 }
