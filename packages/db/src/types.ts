@@ -59,6 +59,7 @@ export type SessionRow = {
   payment_amount: number | null
   coupon_code: string | null
   expires_at: string | null
+  report_key: string | null
 }
 
 export type ResponseRow = {

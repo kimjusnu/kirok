@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { PreviousReportLookup } from './PreviousReportLookup'
 
 const ANCHOR_PRICE = 4900
 const SALE_PRICE = 1500
@@ -50,59 +51,166 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_LD) }}
       />
 
-      {/* HERO */}
-      <section className="max-w-2xl mx-auto px-6 pt-20 pb-24 sm:pt-28 sm:pb-32">
-        <p className="text-[11px] tracking-[0.2em] uppercase text-[var(--ink-soft)]">
-          성격검사 · Big Five 모델
-        </p>
-        <h1 className="mt-6 text-[44px] sm:text-[60px] font-bold leading-[1.05] tracking-tight">
-          유형이 아닌,
-          <br />
-          축으로 보는 나.
-        </h1>
-        <span className="rule mt-8" aria-hidden />
-        <p className="prose-editorial mt-8 text-[17px]">
-          MBTI가 사람을 16개의 상자에 나눠 담는다면, Big Five는 다섯 개의 축
-          위에서 당신의 위치를 백분위로 보여 줍니다. 같은 유형 안에서도 사람이
-          서로 다른 이유는, 원래 성격이 유형이 아니라{' '}
-          <strong>축의 조합</strong>이기 때문입니다.
-        </p>
-        <p className="prose-editorial mt-5 text-[15px] text-[var(--ink-muted)]">
-          10분의 50문항, AI가 써 주는 한국어 해석, 그리고 진짜 학술 논문 링크가
-          붙은 익명 리포트 — 커피 한 잔 값에.
-        </p>
-
-        <dl className="mt-12 grid grid-cols-3 gap-6 text-sm border-t border-b border-[var(--line)] py-6">
-          <div>
-            <dt className="text-[var(--ink-soft)] text-xs">소요</dt>
-            <dd className="mt-1 font-medium">10분</dd>
-          </div>
-          <div>
-            <dt className="text-[var(--ink-soft)] text-xs">문항</dt>
-            <dd className="mt-1 font-medium">50개</dd>
-          </div>
-          <div>
-            <dt className="text-[var(--ink-soft)] text-xs">가격</dt>
-            <dd className="mt-1 font-medium">
-              {SALE_PRICE.toLocaleString()}원{' '}
-              <span className="text-[var(--ink-soft)] line-through ml-1 font-normal">
-                {ANCHOR_PRICE.toLocaleString()}
-              </span>
-            </dd>
-          </div>
-        </dl>
-
-        <div className="mt-8">
-          <Link
-            href="/test/ipip50"
-            className="inline-flex items-center justify-center w-full sm:w-auto gap-2 text-[15px] font-medium px-8 py-4 bg-[var(--ink)] text-white rounded-sm hover:bg-black transition"
-          >
-            검사 시작 <span aria-hidden>→</span>
-          </Link>
-          <p className="mt-3 text-xs text-[var(--ink-soft)]">
-            회원가입 없음 · 쿠폰 있으면 0원 · 리포트는 7일 유효
-          </p>
+      {/* HERO — premium atmosphere via aurora + spotlight + grain layers. */}
+      <section className="relative min-h-[88vh] flex flex-col justify-center overflow-hidden">
+        <div aria-hidden className="hero-bg pointer-events-none">
+          <span className="hero-aurora hero-aurora-a" />
+          <span className="hero-aurora hero-aurora-b" />
+          <span className="hero-aurora hero-aurora-c" />
+          <span className="hero-spotlight" />
+          <span className="hero-grain" />
         </div>
+
+        <div className="relative z-10 max-w-5xl mx-auto w-full px-6 lg:px-12 pt-28 pb-28 sm:pt-36 sm:pb-40">
+          <p className="eyebrow line-reveal" style={{ ['--d' as string]: '0ms' }}>
+            성격검사 · Big Five 모델
+          </p>
+
+          <h1 className="mt-8 font-bold leading-[0.95] tracking-tight text-[clamp(2.8rem,10vw,7.5rem)]">
+            <span
+              className="block line-reveal"
+              style={{ ['--d' as string]: '120ms' }}
+            >
+              유형이 아닌,
+            </span>
+            <span className="block mt-1">
+              {'축으로 보는 '.split('').map((c, i) => (
+                <span
+                  key={`a-${i}`}
+                  className="char-reveal"
+                  style={{ ['--d' as string]: `${260 + i * 55}ms` }}
+                >
+                  {c === ' ' ? '\u00A0' : c}
+                </span>
+              ))}
+              <span className="highlight-bar">
+                <span
+                  className="char-reveal"
+                  style={{ ['--d' as string]: `${260 + 6 * 55}ms` }}
+                >
+                  나
+                </span>
+              </span>
+              <span
+                className="char-reveal"
+                style={{ ['--d' as string]: `${260 + 7 * 55}ms` }}
+              >
+                .
+              </span>
+            </span>
+          </h1>
+
+          <div className="mt-12 grid lg:grid-cols-2 gap-10 lg:gap-16 items-end">
+            <div
+              className="line-reveal"
+              style={{ ['--d' as string]: '900ms' }}
+            >
+              <p className="prose-editorial text-[17px] lg:text-[19px] max-w-xl">
+                MBTI가 사람을 16개의 상자에 나눠 담는다면, Big Five는 다섯 개의
+                축 위에서 당신의 위치를 백분위로 보여 줍니다. 같은 유형 안에서도
+                사람이 서로 다른 이유는, 원래 성격이 유형이 아니라{' '}
+                <strong>축의 조합</strong>이기 때문입니다.
+              </p>
+              <p className="prose-editorial mt-5 text-[14px] text-[var(--ink-muted)] max-w-lg">
+                10분의 50문항, AI가 써 주는 한국어 해석, 그리고 진짜 학술 논문
+                링크가 붙은 익명 리포트 — 커피 한 잔 값에.
+              </p>
+            </div>
+
+            <div
+              className="relative line-reveal"
+              style={{ ['--d' as string]: '1100ms' }}
+            >
+              <div className="relative corner-marks border border-[var(--line)] bg-white/70 backdrop-blur-sm px-6 py-6">
+                <span className="tl" />
+                <span className="tr" />
+                <span className="bl" />
+                <span className="br" />
+                <dl className="grid grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <dt className="text-[10px] tracking-[0.15em] uppercase text-[var(--ink-soft)]">
+                      소요
+                    </dt>
+                    <dd className="mt-1 font-semibold">10분</dd>
+                  </div>
+                  <div>
+                    <dt className="text-[10px] tracking-[0.15em] uppercase text-[var(--ink-soft)]">
+                      문항
+                    </dt>
+                    <dd className="mt-1 font-semibold">50개</dd>
+                  </div>
+                  <div>
+                    <dt className="text-[10px] tracking-[0.15em] uppercase text-[var(--ink-soft)]">
+                      가격
+                    </dt>
+                    <dd className="mt-1 font-semibold">
+                      {SALE_PRICE.toLocaleString()}
+                      <span className="text-[var(--ink-soft)] line-through ml-1 font-normal text-xs">
+                        {ANCHOR_PRICE.toLocaleString()}
+                      </span>
+                    </dd>
+                  </div>
+                </dl>
+                <Link
+                  href="/test/ipip50"
+                  className="mt-5 inline-flex items-center justify-center w-full gap-2 text-[15px] font-medium px-6 py-3.5 bg-[var(--ink)] text-white rounded-sm hover:bg-black transition group"
+                >
+                  검사 시작
+                  <span
+                    aria-hidden
+                    className="transition-transform group-hover:translate-x-1"
+                  >
+                    →
+                  </span>
+                </Link>
+                <p className="mt-3 text-[11px] text-[var(--ink-soft)] text-center">
+                  회원가입 없음 · 쿠폰 있으면 0원 · 7일 유효
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom stats marquee — acts as the hero's underline. */}
+        <div
+          className="relative z-10 border-t border-[var(--line)] bg-white/60 backdrop-blur-sm py-6 overflow-hidden line-reveal"
+          style={{ ['--d' as string]: '1300ms' }}
+        >
+          <div className="marquee gap-16 whitespace-nowrap">
+            {[0, 1].map((loop) => (
+              <div key={loop} className="flex gap-16 shrink-0 pr-16">
+                {[
+                  { big: '50문항', small: '약 10분', tag: 'IPIP-50' },
+                  { big: 'Gemini 2.5', small: 'AI 한국어 해석', tag: 'FLASH' },
+                  { big: 'OpenAlex', small: '실시간 논문 인용', tag: 'OPEN ACCESS' },
+                  { big: '익명', small: '회원가입 없음', tag: 'NO-LOGIN' },
+                  { big: '7일 유효', small: '고유 링크', tag: 'BOOKMARK' },
+                  { big: '1,500원', small: '런칭 할인가', tag: 'LAUNCH' },
+                ].map((s, i) => (
+                  <div
+                    key={`${loop}-${i}`}
+                    className="flex items-baseline gap-4"
+                  >
+                    <span className="text-2xl lg:text-3xl font-semibold tracking-tight">
+                      {s.big}
+                    </span>
+                    <span className="text-[12px] text-[var(--ink-muted)]">
+                      {s.small}
+                      <span className="block font-mono text-[10px] tracking-[0.15em] text-[var(--ink-soft)] mt-0.5">
+                        {s.tag}
+                      </span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Previous report key lookup — quieter, placed just below the hero. */}
+      <section className="max-w-2xl mx-auto px-6 pt-10 pb-8">
+        <PreviousReportLookup />
       </section>
 
       <div className="max-w-2xl mx-auto px-6">

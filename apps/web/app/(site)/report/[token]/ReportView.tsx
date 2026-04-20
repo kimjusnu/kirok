@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { FactorRadar } from './FactorRadar'
 
 type Paper = {
@@ -39,6 +39,38 @@ const LEVEL_LABELS: Array<[number, string]> = [
   [0, '매우 낮음'],
 ]
 
+// Map the /api/results/generate failure payload to a user-facing message.
+// The backend returns { error, stage, code } — code is the specific Gemini
+// status (e.g. UNAVAILABLE) that tells us if it's a "try again" case.
+function friendlyError(body: {
+  error?: string
+  stage?: string
+  code?: string
+}): string {
+  const code = body.code
+  if (
+    code === 'UNAVAILABLE' ||
+    code === 'HTTP_503' ||
+    code === 'HTTP_502' ||
+    code === 'DEADLINE_EXCEEDED'
+  ) {
+    return 'AI 서버가 지금 많이 몰려 있어요. 잠시 후 "다시 시도"를 눌러 주세요.'
+  }
+  if (code === 'RESOURCE_EXHAUSTED' || code === 'HTTP_429') {
+    return '오늘 AI 호출 한도를 초과했어요. 잠시 후 다시 시도해 주세요.'
+  }
+  if (code === 'INVALID_JSON') {
+    return 'AI 응답을 해석하지 못했어요. 한 번 더 시도하면 대부분 해결됩니다.'
+  }
+  if (body.error === 'session_not_paid') {
+    return '결제가 완료되어야 리포트가 열립니다.'
+  }
+  if (body.error === 'session_expired') {
+    return '리포트 유효기간(7일)이 지났습니다.'
+  }
+  return body.error ?? '알 수 없는 오류'
+}
+
 function levelLabel(percentile: number): string {
   for (const [threshold, label] of LEVEL_LABELS) {
     if (percentile >= threshold) return label
@@ -51,11 +83,13 @@ export function ReportView({
   testNameKo,
   factors,
   cached,
+  reportKey,
 }: {
   sessionId: string
   testNameKo: string
   factors: FactorMetaLite[]
   cached: ReportPayload | null
+  reportKey: string | null
 }) {
   const [state, setState] = useState<
     | { kind: 'ready'; data: ReportPayload }
@@ -63,8 +97,14 @@ export function ReportView({
     | { kind: 'error'; message: string }
   >(cached ? { kind: 'ready', data: cached } : { kind: 'loading' })
 
-  const generate = useCallback(async () => {
-    setState({ kind: 'loading' })
+  // Guards against React StrictMode's double-invoke in dev, which would fire
+  // two parallel /generate calls and briefly flash an error before the second
+  // succeeded. Also prevents concurrent manual retries.
+  const inFlightRef = useRef(false)
+
+  const callGenerate = useCallback(async (): Promise<
+    { ok: true; data: ReportPayload } | { ok: false; message: string }
+  > => {
     try {
       const res = await fetch('/api/results/generate', {
         method: 'POST',
@@ -73,25 +113,49 @@ export function ReportView({
       })
       const body = await res.json()
       if (!res.ok) {
-        setState({ kind: 'error', message: body.error ?? `HTTP_${res.status}` })
-        return
+        return { ok: false, message: friendlyError(body) }
       }
-      setState({
-        kind: 'ready',
+      return {
+        ok: true,
         data: {
           rawScores: body.rawScores,
           percentiles: body.percentiles,
           interpretation: body.interpretation,
           citations: body.citations,
         },
-      })
+      }
     } catch (e) {
-      setState({
-        kind: 'error',
+      return {
+        ok: false,
         message: e instanceof Error ? e.message : 'generate_failed',
-      })
+      }
     }
   }, [sessionId])
+
+  const generate = useCallback(
+    async (options: { silentRetry?: boolean } = { silentRetry: true }) => {
+      if (inFlightRef.current) return
+      inFlightRef.current = true
+      setState({ kind: 'loading' })
+      try {
+        let attempt = await callGenerate()
+        if (!attempt.ok && options.silentRetry) {
+          // Absorb transient Gemini/OpenAlex flakes — retry once after a brief
+          // pause before surfacing the error to the user.
+          await new Promise((r) => setTimeout(r, 1500))
+          attempt = await callGenerate()
+        }
+        if (attempt.ok) {
+          setState({ kind: 'ready', data: attempt.data })
+        } else {
+          setState({ kind: 'error', message: attempt.message })
+        }
+      } finally {
+        inFlightRef.current = false
+      }
+    },
+    [callGenerate],
+  )
 
   useEffect(() => {
     if (state.kind !== 'loading') return
@@ -99,6 +163,22 @@ export function ReportView({
     // run once on mount when no cache was available
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  const handlePrint = useCallback(() => {
+    if (typeof window !== 'undefined') window.print()
+  }, [])
+
+  const [copied, setCopied] = useState(false)
+  const copyKey = useCallback(async () => {
+    if (!reportKey) return
+    try {
+      await navigator.clipboard.writeText(reportKey)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1800)
+    } catch {
+      // Fallback: select-and-leave — user can manually copy from the span.
+    }
+  }, [reportKey])
 
   if (state.kind === 'loading') {
     return (
@@ -125,7 +205,7 @@ export function ReportView({
         </div>
         <button
           type="button"
-          onClick={generate}
+          onClick={() => void generate({ silentRetry: true })}
           className="mt-8 px-5 py-3 bg-[var(--ink)] text-white rounded-sm text-sm font-medium"
         >
           다시 시도
@@ -142,15 +222,52 @@ export function ReportView({
   }))
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-12 sm:py-16">
+    <div className="max-w-2xl mx-auto px-6 py-12 sm:py-16 report-root">
       <header>
-        <p className="text-[11px] tracking-[0.2em] uppercase text-[var(--ink-soft)]">
-          Report · {testNameKo}
-        </p>
-        <h1 className="mt-4 text-3xl sm:text-4xl font-semibold tracking-tight">
-          당신의 Big Five 프로파일
-        </h1>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-[11px] tracking-[0.2em] uppercase text-[var(--ink-soft)]">
+              Report · {testNameKo}
+            </p>
+            <h1 className="mt-4 text-3xl sm:text-4xl font-semibold tracking-tight">
+              당신의 Big Five 프로파일
+            </h1>
+          </div>
+          <button
+            type="button"
+            onClick={handlePrint}
+            className="no-print shrink-0 mt-1 px-3 py-2 text-[11px] tracking-[0.1em] uppercase border border-[var(--line)] hover:border-[var(--ink)] transition"
+            aria-label="리포트를 PDF로 저장"
+          >
+            PDF 저장
+          </button>
+        </div>
         <span className="block w-12 h-px bg-[var(--ink)] mt-6" aria-hidden />
+
+        {reportKey && (
+          <div className="mt-8 border border-[var(--line)] bg-[var(--line-soft)] px-5 py-4 flex items-center justify-between gap-4">
+            <div>
+              <p className="text-[10px] tracking-[0.2em] uppercase text-[var(--ink-soft)]">
+                리포트 키 · Report Key
+              </p>
+              <p className="mt-2 text-lg font-mono tracking-[0.2em] font-semibold select-all">
+                {reportKey}
+              </p>
+              <p className="mt-1 text-[11px] text-[var(--ink-soft)] leading-relaxed">
+                이 키를 메모해 두면 홈 &quot;이전 검사 보기&quot;에서 다시 열 수 있어요.
+                (리포트는 결제 후 7일간 유효)
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={copyKey}
+              className="no-print shrink-0 px-3 py-2 text-[11px] tracking-[0.1em] uppercase border border-[var(--line)] hover:border-[var(--ink)] transition"
+              aria-label="리포트 키 복사"
+            >
+              {copied ? '복사됨' : '복사'}
+            </button>
+          </div>
+        )}
       </header>
 
       <section className="mt-12">
@@ -266,7 +383,20 @@ export function ReportView({
         </section>
       )}
 
-      <footer className="mt-20 pt-8 border-t border-[var(--line)] text-[11px] text-[var(--ink-soft)] leading-relaxed">
+      <div className="mt-16 no-print">
+        <button
+          type="button"
+          onClick={handlePrint}
+          className="w-full px-5 py-4 bg-[var(--ink)] text-white text-sm font-medium rounded-sm"
+        >
+          이 리포트를 PDF로 저장
+        </button>
+        <p className="mt-2 text-[11px] text-[var(--ink-soft)] text-center">
+          브라우저 인쇄 창에서 &quot;PDF로 저장&quot;을 선택하세요. 링크 유효기간은 7일입니다.
+        </p>
+      </div>
+
+      <footer className="mt-12 pt-8 border-t border-[var(--line)] text-[11px] text-[var(--ink-soft)] leading-relaxed">
         이 결과는 학습·자기이해 목적의 참고 자료이며, 임상 진단이 아닙니다. 리포트
         링크는 결제일로부터 7일간 유효합니다.
       </footer>

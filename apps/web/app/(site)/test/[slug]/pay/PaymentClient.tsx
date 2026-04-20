@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 type CouponState =
   | { kind: 'idle' }
@@ -15,6 +16,12 @@ type CouponState =
       isFree: boolean
       discountType: string
     }
+
+type CouponMode = 'none' | 'launch' | 'other'
+
+// Keep in sync with migration 0006_coupon_launch_flow.sql.
+// Clicking the "런칭 할인" dropdown option auto-applies this code.
+const LAUNCH_COUPON_CODE = 'LAUNCH1500'
 
 function isMobileUA(): boolean {
   if (typeof navigator === 'undefined') return false
@@ -35,10 +42,14 @@ export function PaymentClient({
   anchorPriceKrw: number
 }) {
   const router = useRouter()
-  const [couponInput, setCouponInput] = useState('')
+  const [mode, setMode] = useState<CouponMode>('none')
+  const [customInput, setCustomInput] = useState('')
   const [coupon, setCoupon] = useState<CouponState>({ kind: 'idle' })
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [agreeTerms, setAgreeTerms] = useState(false)
+  const [agreePrivacy, setAgreePrivacy] = useState(false)
+  const consentsOk = agreeTerms && agreePrivacy
 
   const finalAmount = useMemo(() => {
     if (coupon.kind === 'applied') return coupon.finalAmountKrw
@@ -47,44 +58,63 @@ export function PaymentClient({
 
   const isFree = coupon.kind === 'applied' && coupon.isFree
 
-  const applyCoupon = useCallback(async () => {
-    const code = couponInput.trim()
-    if (!code) return
-    setCoupon({ kind: 'checking' })
-    setError(null)
-    try {
-      const res = await fetch('/api/coupons/validate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId, code }),
-      })
-      const body = await res.json()
-      if (!res.ok) {
-        setCoupon({ kind: 'invalid', reason: body.error ?? 'error' })
-        return
+  const validateCode = useCallback(
+    async (code: string) => {
+      setCoupon({ kind: 'checking' })
+      setError(null)
+      try {
+        const res = await fetch('/api/coupons/validate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId, code }),
+        })
+        const body = await res.json()
+        if (!res.ok) {
+          setCoupon({ kind: 'invalid', reason: body.error ?? 'error' })
+          return
+        }
+        if (!body.valid) {
+          setCoupon({ kind: 'invalid', reason: body.reason ?? 'invalid' })
+          return
+        }
+        setCoupon({
+          kind: 'applied',
+          code,
+          finalAmountKrw: body.finalAmountKrw,
+          discountAmountKrw: body.discountAmountKrw,
+          isFree: body.isFree,
+          discountType: body.discountType,
+        })
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'coupon_error')
+        setCoupon({ kind: 'idle' })
       }
-      if (!body.valid) {
-        setCoupon({ kind: 'invalid', reason: body.reason ?? 'invalid' })
-        return
-      }
-      setCoupon({
-        kind: 'applied',
-        code,
-        finalAmountKrw: body.finalAmountKrw,
-        discountAmountKrw: body.discountAmountKrw,
-        isFree: body.isFree,
-        discountType: body.discountType,
-      })
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'coupon_error')
+    },
+    [sessionId],
+  )
+
+  const onModeChange = useCallback(
+    (next: CouponMode) => {
+      setMode(next)
+      setCustomInput('')
       setCoupon({ kind: 'idle' })
-    }
-  }, [couponInput, sessionId])
+      setError(null)
+      if (next === 'launch') {
+        void validateCode(LAUNCH_COUPON_CODE)
+      }
+    },
+    [validateCode],
+  )
+
+  const applyCustom = useCallback(() => {
+    const code = customInput.trim().toUpperCase()
+    if (!code) return
+    void validateCode(code)
+  }, [customInput, validateCode])
 
   const removeCoupon = useCallback(() => {
-    setCouponInput('')
-    setCoupon({ kind: 'idle' })
-  }, [])
+    onModeChange('none')
+  }, [onModeChange])
 
   const claimFree = useCallback(async () => {
     if (coupon.kind !== 'applied' || !coupon.isFree) return
@@ -134,6 +164,12 @@ export function PaymentClient({
     }
   }, [sessionId, coupon])
 
+  const appliedTag = (() => {
+    if (coupon.kind !== 'applied') return null
+    if (coupon.isFree) return '쿠폰으로 무료'
+    return `−${coupon.discountAmountKrw.toLocaleString()}원`
+  })()
+
   return (
     <div className="max-w-xl mx-auto px-6 py-12 sm:py-16">
       <header>
@@ -159,11 +195,9 @@ export function PaymentClient({
               </span>
             </div>
           </div>
-          {coupon.kind === 'applied' && (
+          {appliedTag && (
             <div className="text-right text-xs text-[var(--accent)]">
-              {coupon.isFree
-                ? '쿠폰으로 무료'
-                : `−${coupon.discountAmountKrw.toLocaleString()}원`}
+              {appliedTag}
             </div>
           )}
         </div>
@@ -173,7 +207,47 @@ export function PaymentClient({
         <h2 className="text-[11px] tracking-[0.2em] uppercase text-[var(--ink-soft)]">
           Coupon
         </h2>
-        {coupon.kind === 'applied' ? (
+
+        <div className="mt-3">
+          <label htmlFor="coupon-mode" className="sr-only">
+            쿠폰 선택
+          </label>
+          <select
+            id="coupon-mode"
+            value={mode}
+            onChange={(e) => onModeChange(e.target.value as CouponMode)}
+            className="w-full px-3 py-2.5 border border-[var(--line)] bg-white text-sm focus:border-[var(--ink)] outline-none transition"
+          >
+            <option value="none">쿠폰 사용 안 함 · {basePriceKrw.toLocaleString()}원</option>
+            <option value="launch">런칭 할인 쿠폰 적용 · 1,500원</option>
+            <option value="other">기타 쿠폰 직접 입력</option>
+          </select>
+        </div>
+
+        {mode === 'other' && coupon.kind !== 'applied' && (
+          <div className="mt-3 flex gap-2">
+            <input
+              type="text"
+              value={customInput}
+              onChange={(e) => setCustomInput(e.target.value.toUpperCase())}
+              placeholder="코드 입력"
+              className="flex-1 px-3 py-2.5 border border-[var(--line)] focus:border-[var(--ink)] outline-none text-sm font-mono tracking-wide transition"
+              aria-label="기타 쿠폰 코드"
+            />
+            <button
+              type="button"
+              onClick={applyCustom}
+              disabled={
+                coupon.kind === 'checking' || customInput.trim().length === 0
+              }
+              className="px-5 py-2.5 bg-[var(--ink)] text-white text-sm disabled:opacity-30"
+            >
+              {coupon.kind === 'checking' ? '확인…' : '적용'}
+            </button>
+          </div>
+        )}
+
+        {coupon.kind === 'applied' && (
           <div className="mt-3 flex items-center justify-between py-3 border-b border-[var(--line)]">
             <div className="text-sm">
               <span className="font-mono tracking-wide">{coupon.code}</span>
@@ -187,28 +261,14 @@ export function PaymentClient({
               제거
             </button>
           </div>
-        ) : (
-          <div className="mt-3 flex gap-2">
-            <input
-              type="text"
-              value={couponInput}
-              onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
-              placeholder="코드 입력"
-              className="flex-1 px-3 py-2.5 border border-[var(--line)] focus:border-[var(--ink)] outline-none text-sm font-mono tracking-wide transition"
-              aria-label="쿠폰 코드"
-            />
-            <button
-              type="button"
-              onClick={applyCoupon}
-              disabled={
-                coupon.kind === 'checking' || couponInput.trim().length === 0
-              }
-              className="px-5 py-2.5 bg-[var(--ink)] text-white text-sm disabled:opacity-30"
-            >
-              {coupon.kind === 'checking' ? '확인…' : '적용'}
-            </button>
+        )}
+
+        {coupon.kind === 'checking' && mode === 'launch' && (
+          <div className="mt-2 text-[11px] text-[var(--ink-soft)]">
+            쿠폰 적용 중…
           </div>
         )}
+
         {coupon.kind === 'invalid' && (
           <div className="mt-2 text-[11px] text-red-600">
             사용할 수 없는 쿠폰 · {coupon.reason}
@@ -216,12 +276,62 @@ export function PaymentClient({
         )}
       </section>
 
-      <div className="mt-10">
+      <section className="mt-10 pt-6 border-t border-[var(--line)]">
+        <h2 className="text-[11px] tracking-[0.2em] uppercase text-[var(--ink-soft)]">
+          약관 동의
+        </h2>
+        <div className="mt-3 space-y-2 text-[13px]">
+          <label className="flex items-start gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={agreeTerms}
+              onChange={(e) => setAgreeTerms(e.target.checked)}
+              className="mt-[3px] shrink-0"
+              aria-label="이용약관 및 환불정책 동의"
+            />
+            <span className="leading-[1.6]">
+              <span className="text-red-600 mr-1" aria-hidden>
+                *
+              </span>
+              (필수){' '}
+              <Link href="/terms" target="_blank" className="link-underline">
+                이용약관
+              </Link>{' '}
+              및{' '}
+              <Link href="/refund" target="_blank" className="link-underline">
+                환불정책
+              </Link>
+              에 동의합니다.
+            </span>
+          </label>
+          <label className="flex items-start gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={agreePrivacy}
+              onChange={(e) => setAgreePrivacy(e.target.checked)}
+              className="mt-[3px] shrink-0"
+              aria-label="개인정보 수집 및 이용 동의"
+            />
+            <span className="leading-[1.6]">
+              <span className="text-red-600 mr-1" aria-hidden>
+                *
+              </span>
+              (필수){' '}
+              <Link href="/privacy" target="_blank" className="link-underline">
+                개인정보 수집·이용
+              </Link>
+              에 동의합니다.
+            </span>
+          </label>
+        </div>
+      </section>
+
+      <div className="mt-8">
         {isFree ? (
           <button
             type="button"
             onClick={claimFree}
-            disabled={submitting}
+            disabled={submitting || !consentsOk}
             className="w-full px-5 py-4 bg-[var(--ink)] text-white font-medium rounded-sm disabled:opacity-40"
           >
             {submitting ? '처리 중…' : '무료로 리포트 받기 →'}
@@ -230,13 +340,18 @@ export function PaymentClient({
           <button
             type="button"
             onClick={startKakaoPayment}
-            disabled={submitting}
+            disabled={submitting || !consentsOk}
             className="w-full px-5 py-4 bg-[#FEE500] text-[#3C1E1E] font-semibold rounded-sm hover:bg-[#FDD835] transition disabled:opacity-40"
           >
             {submitting
               ? '카카오페이로 이동 중…'
               : `카카오페이로 ${finalAmount.toLocaleString()}원 결제`}
           </button>
+        )}
+        {!consentsOk && (
+          <p className="mt-2 text-[11px] text-[var(--ink-soft)]">
+            결제 진행을 위해 위 약관에 동의해 주세요.
+          </p>
         )}
         <p className="mt-3 text-[11px] text-[var(--ink-soft)]">
           결제창은 카카오페이로 이동합니다. 완료 후 자동으로 리포트 페이지로

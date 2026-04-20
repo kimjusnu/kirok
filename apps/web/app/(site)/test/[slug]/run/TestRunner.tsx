@@ -101,9 +101,23 @@ export function TestRunner({
   const selected = current ? responses[current.order] : undefined
   const canGoNext = selected !== undefined
   const isLast = cursor === total - 1
-  const allAnswered = useMemo(
-    () => items.every((i) => responses[i.order] !== undefined),
+  const missingItems = useMemo(
+    () => items.filter((i) => responses[i.order] === undefined),
     [items, responses],
+  )
+  const allAnswered = missingItems.length === 0
+  const firstMissingIndex = useMemo(() => {
+    const first = missingItems[0]
+    if (!first) return -1
+    return items.findIndex((i) => i.order === first.order)
+  }, [items, missingItems])
+
+  const jumpToOrder = useCallback(
+    (order: number) => {
+      const idx = items.findIndex((i) => i.order === order)
+      if (idx >= 0) setCursor(idx)
+    },
+    [items],
   )
 
   const choose = useCallback(
@@ -238,6 +252,43 @@ export function TestRunner({
         </div>
       </section>
 
+      {!allAnswered && (
+        <div className="mt-10 border-t border-[var(--line)] pt-5">
+          <div className="flex items-baseline justify-between gap-3">
+            <div className="text-[11px] tracking-[0.15em] uppercase text-[var(--ink-soft)]">
+              미응답 {missingItems.length}개
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                if (firstMissingIndex >= 0) setCursor(firstMissingIndex)
+              }}
+              className="text-[11px] text-[var(--ink)] link-underline"
+            >
+              첫 미응답으로 이동 →
+            </button>
+          </div>
+          <div className="mt-2 flex flex-wrap gap-1.5" aria-label="미응답 문항 번호">
+            {missingItems.slice(0, 30).map((i) => (
+              <button
+                key={i.order}
+                type="button"
+                onClick={() => jumpToOrder(i.order)}
+                className="px-2 py-1 text-[11px] font-mono border border-[var(--line)] hover:border-[var(--ink)] transition"
+                aria-label={`${i.order}번 문항으로 이동`}
+              >
+                #{i.order}
+              </button>
+            ))}
+            {missingItems.length > 30 && (
+              <span className="px-2 py-1 text-[11px] text-[var(--ink-soft)]">
+                +{missingItems.length - 30}개
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="mt-10 flex items-center justify-between gap-2">
         <button
           type="button"
@@ -251,11 +302,21 @@ export function TestRunner({
         {isLast ? (
           <button
             type="button"
-            onClick={submit}
-            disabled={!allAnswered || submitting}
+            onClick={() => {
+              if (!allAnswered) {
+                if (firstMissingIndex >= 0) setCursor(firstMissingIndex)
+                return
+              }
+              void submit()
+            }}
+            disabled={submitting}
             className="px-5 py-3 bg-[var(--ink)] text-white text-sm font-medium rounded-sm disabled:opacity-40"
           >
-            {submitting ? '제출 중…' : '제출하고 결과 보기 →'}
+            {submitting
+              ? '제출 중…'
+              : allAnswered
+                ? '제출하고 결과 보기 →'
+                : `미응답 ${missingItems.length}개로 이동 →`}
           </button>
         ) : (
           <button

@@ -53,9 +53,58 @@ describe('buildInterpretationPrompt', () => {
     expect(prompt).toContain('"suggestions"')
   })
 
-  it('forbids Gemini from inventing citations', () => {
-    const prompt = buildInterpretationPrompt({ result, factors })
-    expect(prompt).toMatch(/인용.*별도|논문.*직접 인용.*금지|직접 인용.*금지/)
+  it('lists provided papers under each factor with Korean citation tags', () => {
+    const prompt = buildInterpretationPrompt({
+      result,
+      factors,
+      papersByFactor: {
+        openness: [
+          {
+            paperId: 'W1',
+            title: 'Openness and creative cognition',
+            authors: ['Jane Smith', 'Min Lee'],
+            year: 2020,
+            doi: null,
+            url: null,
+            abstract: null,
+          },
+        ],
+      },
+    })
+    expect(prompt).toContain('참고 연구')
+    expect(prompt).toContain('Openness and creative cognition')
+    expect(prompt).toContain('(Smith & Lee, 2020)')
+  })
+
+  it('restricts Gemini to the provided paper list when papers are supplied', () => {
+    const prompt = buildInterpretationPrompt({
+      result,
+      factors,
+      papersByFactor: {
+        openness: [
+          {
+            paperId: 'W1',
+            title: 'Any',
+            authors: ['Jane Smith'],
+            year: 2020,
+            doi: null,
+            url: null,
+            abstract: null,
+          },
+        ],
+      },
+    })
+    expect(prompt).toMatch(/지어내거나 추측하지|다른 연구를 지어내/)
+  })
+
+  it('omits the citation guidance block when no papers are available', () => {
+    const prompt = buildInterpretationPrompt({
+      result,
+      factors,
+      papersByFactor: { openness: [], conscientiousness: [] },
+    })
+    expect(prompt).not.toContain('인용 지침:')
+    expect(prompt).not.toMatch(/지어내거나 추측하지/)
   })
 })
 

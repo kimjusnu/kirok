@@ -34,7 +34,7 @@ export default async function ReportPage({
   const db = createServiceClient()
   const { data: session, error } = await db
     .from('sessions')
-    .select('id, paid_at, expires_at, tests(slug)')
+    .select('id, paid_at, expires_at, report_key, tests(slug)')
     .eq('access_token', params.token)
     .maybeSingle()
 
@@ -91,6 +91,7 @@ export default async function ReportPage({
         testNameKo={testDef.nameKo}
         factors={factors}
         cached={cached}
+        reportKey={session.report_key}
       />
     </main>
   )
