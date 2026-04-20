@@ -1,13 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { adminBasePathFromLocation } from '@/lib/admin-path'
 
 type DiscountType = 'free' | 'percent' | 'fixed'
 
 export function NewCouponForm() {
-  const router = useRouter()
   const [code, setCode] = useState('')
   const [type, setType] = useState<DiscountType>('free')
   const [value, setValue] = useState('')
@@ -49,18 +47,30 @@ export function NewCouponForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       })
-      const data = await res.json().catch(() => ({}) as { error?: string })
+      // 응답 본문이 비어도(500 empty body 포함) UI가 터지지 않게 방어.
+      const raw = await res.text()
+      let data: { error?: string; stage?: string; id?: string; code?: string } =
+        {}
+      if (raw) {
+        try {
+          data = JSON.parse(raw)
+        } catch {
+          data = { error: `HTTP_${res.status}` }
+        }
+      }
       if (!res.ok) {
-        // 409: 같은 코드가 이미 있어요.
         if (res.status === 409 || data.error === 'code_already_exists') {
           throw new Error(
             `이미 "${body.code as string}" 코드의 쿠폰이 있어요. 목록에서 삭제 후 다시 만들거나 다른 코드를 쓰세요.`,
           )
         }
-        throw new Error(data.error ?? `HTTP_${res.status}`)
+        const detail = data.stage ? ` (${data.stage})` : ''
+        throw new Error(`${data.error ?? `HTTP_${res.status}`}${detail}`)
       }
-      router.push(`${base}/coupons`)
-      router.refresh()
+      // Next.js App Router의 소프트 네비게이션 + 서버 컴포넌트 캐시로 인해
+      // `router.push + refresh`가 프로덕션에서 가끔 stale 리스트를 보여 주는
+      // 사례가 있었음. Full navigation으로 강제 새 요청 → 서버 컴포넌트 재렌더.
+      window.location.href = `${base}/coupons`
     } catch (err) {
       setError(err instanceof Error ? err.message : 'create_failed')
     } finally {
