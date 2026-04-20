@@ -40,6 +40,17 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION,
   },
   robots: { index: true, follow: true },
+  verification: {
+    // Google Search Console — HTML 파일(/public/googleceb063d16e301f6e.html)과
+    // 이 메타 태그 둘 다 등록해 두면 이중으로 소유권 검증됨.
+    google: 'IF3-fq0lvvNTcCCxBMZFtZea5z6sFe8Z3olALXzA4QE',
+    // Naver 웹마스터 도구(Search Advisor) — `other`는 임의의 name 메타를 그대로
+    // <head>에 렌더. HTML 파일(/public/navere43e8a392a1b77636671e848be5a0e85.html)도
+    // 함께 업로드돼 있어 어느 방법을 선택하든 통과.
+    other: {
+      'naver-site-verification': 'e8a3628e1e39103b9be3632ffcea88c7c2379da8',
+    },
+  },
 }
 
 const ORGANIZATION_LD = {
