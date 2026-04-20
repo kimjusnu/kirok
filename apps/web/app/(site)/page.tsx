@@ -176,7 +176,7 @@ export default function HomePage() {
                     </span>
                   </Link>
                   <p className="mt-3 text-[11px] text-[var(--ink-soft)] text-center">
-                    익명으로 10분, 리포트는 7일간 곁에.
+                    AI 해석 + 학술 논문 인용 · 익명 리포트
                   </p>
                 </div>
               </div>
