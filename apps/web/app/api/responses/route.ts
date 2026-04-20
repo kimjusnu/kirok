@@ -38,7 +38,7 @@ export async function POST(request: Request) {
 
   const { data: session, error: sessionError } = await db
     .from('sessions')
-    .select('id, completed_at, tests(slug)')
+    .select('id, test_id, completed_at, tests(slug)')
     .eq('id', sessionId)
     .maybeSingle()
   if (sessionError) {
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
   const { data: items, error: itemsError } = await db
     .from('test_items')
     .select('id, order_num')
-    .eq('test_id', testDef.id)
+    .eq('test_id', session.test_id)
   if (itemsError || !items) {
     console.error('responses: items lookup failed', itemsError)
     return NextResponse.json({ error: 'internal_error' }, { status: 500 })
