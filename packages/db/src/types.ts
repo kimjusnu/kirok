@@ -90,6 +90,7 @@ export type CouponRow = {
   expires_at: string | null
   note: string | null
   is_active: boolean
+  is_public: boolean
   created_at: string
 }
 

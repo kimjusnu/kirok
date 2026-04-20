@@ -17,6 +17,8 @@ const RequestSchema = z
     maxUses: z.number().int().positive().optional(),
     expiresAt: z.string().datetime().optional(),
     note: z.string().max(200).nullable().optional(),
+    // true 로 발급하면 결제 페이지 드롭다운에 즉시 노출.
+    isPublic: z.boolean().optional(),
   })
   .refine(
     (d) =>
@@ -53,6 +55,7 @@ export async function POST(request: Request) {
       expires_at: d.expiresAt ?? null,
       note: d.note ?? null,
       is_active: true,
+      is_public: d.isPublic ?? false,
     })
     .select('id, code')
     .single()

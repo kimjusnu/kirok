@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
@@ -17,15 +17,40 @@ type CouponState =
       discountType: string
     }
 
-type CouponMode = 'none' | 'launch' | 'other'
+type PublicCoupon = {
+  code: string
+  discount_type: 'free' | 'percent' | 'fixed'
+  discount_value: number
+  note: string | null
+}
 
-// Keep in sync with migration 0006_coupon_launch_flow.sql.
-// Clicking the "런칭 할인" dropdown option auto-applies this code.
-const LAUNCH_COUPON_CODE = 'LAUNCH1500'
+// 드롭다운 value 형식:
+// - 'none'          → 쿠폰 미사용
+// - 'other'         → 기타 코드 직접 입력
+// - 'public:CODE'   → 관리자가 is_public=true 로 공개한 쿠폰 자동 적용
+type CouponMode = 'none' | 'other' | `public:${string}`
 
 function isMobileUA(): boolean {
   if (typeof navigator === 'undefined') return false
   return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
+}
+
+function finalPriceFor(coupon: PublicCoupon, basePrice: number): number {
+  if (coupon.discount_type === 'free') return 0
+  if (coupon.discount_type === 'percent') {
+    return Math.round(basePrice * (1 - coupon.discount_value / 100))
+  }
+  return Math.max(0, basePrice - coupon.discount_value)
+}
+
+function labelFor(coupon: PublicCoupon, basePrice: number): string {
+  const final = finalPriceFor(coupon, basePrice)
+  const title = coupon.note?.trim() || coupon.code
+  if (coupon.discount_type === 'free') return `${title} · 무료 (0원)`
+  if (coupon.discount_type === 'percent') {
+    return `${title} · ${coupon.discount_value}% 할인 → ${final.toLocaleString()}원`
+  }
+  return `${title} · −${coupon.discount_value.toLocaleString()}원 → ${final.toLocaleString()}원`
 }
 
 export function PaymentClient({
@@ -50,6 +75,25 @@ export function PaymentClient({
   const [agreeTerms, setAgreeTerms] = useState(false)
   const [agreePrivacy, setAgreePrivacy] = useState(false)
   const consentsOk = agreeTerms && agreePrivacy
+  const [publicCoupons, setPublicCoupons] = useState<PublicCoupon[]>([])
+
+  // 관리자가 is_public=true로 공개한 쿠폰 목록을 마운트 시 한 번 가져온다.
+  // 실패해도 사용자는 "기타 쿠폰 직접 입력"으로 코드 입력해 쓸 수 있어
+  // 드롭다운이 비어도 결제 자체는 문제없음.
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/coupons/public')
+      .then((r) => r.json())
+      .then((d: { coupons?: PublicCoupon[] }) => {
+        if (!cancelled) setPublicCoupons(d.coupons ?? [])
+      })
+      .catch(() => {
+        if (!cancelled) setPublicCoupons([])
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const finalAmount = useMemo(() => {
     if (coupon.kind === 'applied') return coupon.finalAmountKrw
@@ -99,8 +143,10 @@ export function PaymentClient({
       setCustomInput('')
       setCoupon({ kind: 'idle' })
       setError(null)
-      if (next === 'launch') {
-        void validateCode(LAUNCH_COUPON_CODE)
+      // `public:CODE` 선택 시 해당 코드를 자동 적용.
+      if (next.startsWith('public:')) {
+        const code = next.slice('public:'.length)
+        if (code) void validateCode(code)
       }
     },
     [validateCode],
@@ -218,8 +264,14 @@ export function PaymentClient({
             onChange={(e) => onModeChange(e.target.value as CouponMode)}
             className="w-full px-3 py-2.5 border border-[var(--line)] bg-white text-sm focus:border-[var(--ink)] outline-none transition"
           >
-            <option value="none">쿠폰 사용 안 함 · {basePriceKrw.toLocaleString()}원</option>
-            <option value="launch">런칭 할인 쿠폰 적용 · 1,500원</option>
+            <option value="none">
+              쿠폰 사용 안 함 · {basePriceKrw.toLocaleString()}원
+            </option>
+            {publicCoupons.map((c) => (
+              <option key={c.code} value={`public:${c.code}`}>
+                {labelFor(c, basePriceKrw)}
+              </option>
+            ))}
             <option value="other">기타 쿠폰 직접 입력</option>
           </select>
         </div>
@@ -263,7 +315,7 @@ export function PaymentClient({
           </div>
         )}
 
-        {coupon.kind === 'checking' && mode === 'launch' && (
+        {coupon.kind === 'checking' && mode.startsWith('public:') && (
           <div className="mt-2 text-[11px] text-[var(--ink-soft)]">
             쿠폰 적용 중…
           </div>

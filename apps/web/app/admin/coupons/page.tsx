@@ -29,7 +29,7 @@ export default async function AdminCouponsPage() {
   const { data, error } = await db
     .from('coupons')
     .select(
-      'id, code, discount_type, discount_value, max_uses, used_count, expires_at, is_active, note, created_at',
+      'id, code, discount_type, discount_value, max_uses, used_count, expires_at, is_active, is_public, note, created_at',
     )
     .order('created_at', { ascending: false })
     .limit(200)
@@ -73,6 +73,7 @@ export default async function AdminCouponsPage() {
                 <th className="text-right font-normal py-3">사용</th>
                 <th className="text-left font-normal py-3">만료</th>
                 <th className="text-left font-normal py-3">상태</th>
+                <th className="text-left font-normal py-3">공개</th>
                 <th className="text-left font-normal py-3">메모</th>
                 <th className="py-3"></th>
               </tr>
@@ -81,7 +82,7 @@ export default async function AdminCouponsPage() {
               {rows.length === 0 && (
                 <tr>
                   <td
-                    colSpan={8}
+                    colSpan={9}
                     className="py-10 text-center text-sm text-[var(--ink-soft)]"
                   >
                     아직 쿠폰이 없어요.{' '}
@@ -113,6 +114,7 @@ export default async function AdminCouponsPage() {
                     expires={fmt(c.expires_at)}
                     expired={Boolean(expired)}
                     isActive={c.is_active}
+                    isPublic={c.is_public}
                     note={c.note}
                   />
                 )

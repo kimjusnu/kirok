@@ -12,6 +12,7 @@ export function NewCouponForm() {
   const [maxUses, setMaxUses] = useState('')
   const [expiresAt, setExpiresAt] = useState('')
   const [note, setNote] = useState('')
+  const [isPublic, setIsPublic] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -24,6 +25,7 @@ export function NewCouponForm() {
         code: code.trim().toUpperCase(),
         discountType: type,
         note: note.trim() || null,
+        isPublic,
       }
       if (type === 'free') {
         body.discountValue = 0
@@ -179,6 +181,23 @@ export function NewCouponForm() {
           placeholder="예: 런칭 체험단 100명"
           className="mt-3 w-full px-0 py-2 border-0 border-b border-[var(--line)] focus:border-[var(--ink)] outline-none text-[16px] bg-transparent"
         />
+      </label>
+
+      <label className="flex items-start gap-3 pt-2 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={isPublic}
+          onChange={(e) => setIsPublic(e.target.checked)}
+          className="mt-1 w-4 h-4 accent-[var(--ink)]"
+        />
+        <span className="text-[13px] leading-relaxed">
+          <span className="font-medium">결제창에 공개</span>
+          <span className="block text-[var(--ink-muted)] text-[12px] mt-1">
+            체크하면 누구나 결제 페이지 쿠폰 드롭다운에서 이 쿠폰을 바로 고를
+            수 있어요. 끄면 코드를 아는 사람만 &quot;기타 쿠폰 직접 입력&quot;으로
+            쓸 수 있는 비공개 쿠폰이 됩니다.
+          </span>
+        </span>
       </label>
 
       {error && (

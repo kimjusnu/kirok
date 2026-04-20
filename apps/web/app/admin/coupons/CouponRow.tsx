@@ -12,6 +12,7 @@ export function CouponRow({
   expires,
   expired,
   isActive,
+  isPublic,
   note,
 }: {
   id: string
@@ -22,10 +23,13 @@ export function CouponRow({
   expires: string
   expired: boolean
   isActive: boolean
+  isPublic: boolean
   note: string | null
 }) {
   const [active, setActive] = useState(isActive)
+  const [pub, setPub] = useState(isPublic)
   const [pending, start] = useTransition()
+  const [pubPending, startPub] = useTransition()
   const [deleting, setDeleting] = useState(false)
   const [copied, setCopied] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -56,6 +60,27 @@ export function CouponRow({
       }
       // router.refresh()가 Vercel 프로덕션에서 미들웨어 rewrite 경로의 route
       // 캐시를 뚫지 못하는 사례가 있음. 하드 리로드로 확실히 최신 상태 노출.
+      window.location.reload()
+    })
+  }
+
+  async function togglePublic() {
+    const next = !pub
+    setError(null)
+    setPub(next)
+    startPub(async () => {
+      const base = adminBasePathFromLocation()
+      const res = await fetch(`${base}/api/coupons/${id}/toggle`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ public: next }),
+      })
+      if (!res.ok) {
+        setPub(!next)
+        const body = await res.json().catch(() => ({}))
+        setError(body.error ?? 'toggle_public_failed')
+        return
+      }
       window.location.reload()
     })
   }
@@ -114,6 +139,25 @@ export function CouponRow({
       <td className="py-3 text-right font-mono text-xs">{usage}</td>
       <td className="py-3 font-mono text-xs text-[var(--ink-muted)]">{expires}</td>
       <td className={`py-3 text-xs ${stateClass}`}>{state}</td>
+      <td className="py-3 text-xs">
+        <button
+          type="button"
+          onClick={togglePublic}
+          disabled={pubPending || deleting}
+          className={`px-2 py-0.5 border text-[10px] uppercase tracking-wider transition disabled:opacity-40 ${
+            pub
+              ? 'border-[var(--accent)] text-[var(--accent)] hover:bg-[var(--accent)]/5'
+              : 'border-[var(--line)] text-[var(--ink-soft)] hover:border-[var(--ink-muted)]'
+          }`}
+          title={
+            pub
+              ? '결제창 드롭다운에 공개 중 · 클릭 시 비공개로 전환'
+              : '비공개 · 클릭 시 결제창에 공개'
+          }
+        >
+          {pubPending ? '…' : pub ? '공개' : '비공개'}
+        </button>
+      </td>
       <td className="py-3 text-xs text-[var(--ink-muted)] truncate max-w-[220px]">
         {note ?? '—'}
       </td>
