@@ -27,7 +27,7 @@ async function seedOne(
         description: test.description,
         total_items: test.items.length,
         estimated_minutes: test.estimatedMinutes,
-        price_krw: 1900,
+        price_krw: 1500,
         anchor_price_krw: 4900,
         is_active: true,
       },

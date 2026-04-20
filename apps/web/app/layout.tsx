@@ -5,7 +5,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
 const SITE_NAME = 'kirok'
 const SITE_TAGLINE = 'kirok · 정밀 기질검사'
 const SITE_DESCRIPTION =
-  'Goldberg IPIP Big-Five 50문항 기반 5요인 성격검사. 요인별 백분위와 한국어 AI 해석, OpenAlex에서 실시간 검색한 학술 논문 인용까지. 10분, 익명, 1,900원 (쿠폰 시 무료).'
+  'Goldberg IPIP Big-Five 50문항 기반 5요인 성격검사. 요인별 백분위와 한국어 AI 해석, OpenAlex에서 실시간 검색한 학술 논문 인용까지. 10분, 익명, 1,500원 (쿠폰 시 무료).'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

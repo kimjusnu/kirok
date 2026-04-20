@@ -98,7 +98,7 @@ export default function OpengraphImage() {
             <span style={{ color: '#71717a', textDecoration: 'line-through' }}>
               4,900
             </span>
-            <span style={{ fontWeight: 600 }}>1,900원</span>
+            <span style={{ fontWeight: 600 }}>1,500원</span>
           </div>
         </div>
       </div>

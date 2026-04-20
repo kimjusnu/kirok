@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
 const ANCHOR_PRICE = 4900
-const SALE_PRICE = 1900
+const SALE_PRICE = 1500
 
 const FAQ_LD = {
   '@context': 'https://schema.org',
