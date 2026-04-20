@@ -67,8 +67,35 @@ export function ConsentForm({
           },
         }),
       })
-      const body = await res.json()
-      if (!res.ok) throw new Error(body.error ?? 'session_create_failed')
+      // 서버가 빈 body로 500을 반환하는 엣지 케이스(런타임 크래시·Vercel
+      // 타임아웃 등)에서도 res.json()이 "Unexpected end of JSON input"으로
+      // 터지지 않도록 방어. JSON 파싱 실패 시 HTTP 상태 기반 메시지로 폴백.
+      const raw = await res.text()
+      let body: {
+        sessionId?: string
+        accessToken?: string
+        error?: string
+        stage?: string
+        code?: string
+        message?: string
+      } = {}
+      if (raw) {
+        try {
+          body = JSON.parse(raw)
+        } catch {
+          body = { error: `HTTP_${res.status}`, message: raw.slice(0, 120) }
+        }
+      } else {
+        body = { error: `HTTP_${res.status}` }
+      }
+      if (!res.ok || !body.sessionId || !body.accessToken) {
+        const detail = body.stage
+          ? ` (${body.stage}${body.code ? `:${body.code}` : ''})`
+          : ''
+        throw new Error(
+          `${body.error ?? 'session_create_failed'}${detail}`,
+        )
+      }
       router.push(`/test/${slug}/run?sid=${body.sessionId}&at=${body.accessToken}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'session_create_failed')
