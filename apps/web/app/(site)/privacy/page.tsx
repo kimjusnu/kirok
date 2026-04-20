@@ -103,6 +103,7 @@ const SECTIONS: { title: string; body: string }[] = [
 
 - 개인정보 보호책임자: ${BUSINESS_INFO.privacyOfficer}
 - 이메일: ${BUSINESS_INFO.email}
+- 전화: ${BUSINESS_INFO.phone}
 
 또한 아래 기관에 개인정보침해신고·상담이 가능합니다.
 - 개인정보분쟁조정위원회 (1833-6972, www.kopico.go.kr)

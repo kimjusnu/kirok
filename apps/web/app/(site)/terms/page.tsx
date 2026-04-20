@@ -122,7 +122,9 @@ export default function TermsPage() {
             · 사업자등록번호 {BUSINESS_INFO.businessRegistrationNumber}
           </p>
           <p>주소: {BUSINESS_INFO.address}</p>
-          <p>문의: {BUSINESS_INFO.email}</p>
+          <p>
+            문의: {BUSINESS_INFO.email} · {BUSINESS_INFO.phone}
+          </p>
         </footer>
       </article>
     </main>
