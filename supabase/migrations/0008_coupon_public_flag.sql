@@ -10,5 +10,6 @@ alter table public.coupons
 -- 결제창에서 기본 노출 중이던 "런칭 할인 쿠폰"은 is_public=true로 고정.
 update public.coupons set is_public = true where code = 'LAUNCH1500';
 
--- 지인 전용 무료 쿠폰은 계속 비공개 유지 (명시).
-update public.coupons set is_public = false where code = 'ANFYZNVHS123';
+-- 그 외 프로덕션에 이미 존재하는 비공개 쿠폰(예: 이전 시드로 생성된 100%
+-- 무료 수동 공유 코드)은 default false를 그대로 유지. 관리자 UI에서
+-- 필요 시 "공개" 토글로 개별 제어.
