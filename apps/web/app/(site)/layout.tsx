@@ -74,18 +74,18 @@ function SiteFooter({ adminBase }: { adminBase: string }) {
           </Link>
         </nav>
 
-        <dl className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-[11px]">
+        <dl className="mt-5 flex flex-col gap-y-1 text-[11px] text-left">
           <div>
             <dt className="inline text-[var(--ink-muted)]">대표 </dt>
             <dd className="inline">{b.representative}</dd>
           </div>
           <div>
-            <dt className="inline text-[var(--ink-muted)]">사업자등록번호 </dt>
-            <dd className="inline">{b.businessRegistrationNumber}</dd>
-          </div>
-          <div className="sm:col-span-2">
             <dt className="inline text-[var(--ink-muted)]">이메일 </dt>
             <dd className="inline">{b.email}</dd>
+          </div>
+          <div>
+            <dt className="inline text-[var(--ink-muted)]">사업자등록번호 </dt>
+            <dd className="inline">{b.businessRegistrationNumber}</dd>
           </div>
         </dl>
 

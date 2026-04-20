@@ -26,7 +26,7 @@ export async function GET(): Promise<Response> {
 - AI 모델: Google Gemini 2.5 Flash (폴백: gemini-flash-latest, gemini-2.5-flash-lite)
 - 논문 소스: OpenAlex (CC0, 670만+ 저널, 2.5억+ 논문)
 - 소요 시간: 약 10분
-- 가격: 4,900원 (런칭 할인 쿠폰 적용 시 1,500원, 특정 무료 쿠폰 사용 시 0원)
+- 가격: 1,500원 (런칭 할인가)
 - 결제: 카카오페이(KakaoPay) 간편결제
 - 리포트 유효기간: 결제 완료 후 7일
 - 회원가입: 없음 (익명 · access_token 기반 고유 링크)

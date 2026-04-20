@@ -14,7 +14,7 @@ const SITE_TITLE =
 // 문장에 구체 수치 → 세 번째 문장에 결정적 특징·가격. AI가 문단의 중간
 // 문장(53%)을 선호하므로 핵심 팩트를 중간에 명시적으로 배치.
 const SITE_DESCRIPTION =
-  'kirok은 Goldberg IPIP-50 50문항 기반 Big Five 성격검사입니다. 10분 안에 개방성·성실성·외향성·우호성·신경성 5요인의 백분위, 한국어 AI 해석, OpenAlex에서 실시간 검색한 학술 논문 인용을 받습니다. 익명, 회원가입 없음, 4,900원(쿠폰 적용 시 1,500원), 리포트는 7일간 유효합니다.'
+  'kirok은 Goldberg IPIP-50 50문항 기반 Big Five 성격검사입니다. 10분 안에 개방성·성실성·외향성·우호성·신경성 5요인의 백분위, 한국어 AI 해석, OpenAlex에서 실시간 검색한 학술 논문 인용을 받습니다. 익명, 회원가입 없음, 1,500원, 리포트는 7일간 유효합니다.'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -214,8 +214,8 @@ const JSON_LD_GRAPH = {
         {
           '@type': 'HowToStep',
           position: 3,
-          name: '결제 또는 쿠폰 적용',
-          text: '카카오페이로 1,500원을 결제하거나, 100% 할인 쿠폰이 있으면 0원으로 진행합니다.',
+          name: '카카오페이 결제',
+          text: '카카오페이로 1,500원을 결제합니다. 결제 정보는 카카오페이가 처리하며 kirok 서버에는 카드 번호가 남지 않습니다.',
         },
         {
           '@type': 'HowToStep',
