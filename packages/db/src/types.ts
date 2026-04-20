@@ -1,6 +1,12 @@
 /**
  * Hand-written DB types matching supabase/migrations/0001_initial.sql.
  *
+ * Row types are `type` aliases (not `interface`) because supabase-js requires
+ * each Table entry to satisfy `Record<string, unknown>`; TypeScript treats
+ * interface declarations as declaration-mergeable and rejects the index-
+ * signature check, so interfaces would make the whole Database type collapse
+ * to `never` at query sites.
+ *
  * To replace with CLI-generated types after migration is applied:
  *   pnpm --filter @temperament/db gen:types
  */
@@ -17,7 +23,7 @@ export type ScaleType = 'likert5' | 'likert7'
 export type DiscountType = 'percent' | 'fixed' | 'free'
 export type PaymentStatus = 'pending' | 'completed' | 'failed' | 'canceled'
 
-export interface TestRow {
+export type TestRow = {
   id: string
   slug: string
   name_ko: string
@@ -31,7 +37,7 @@ export interface TestRow {
   created_at: string
 }
 
-export interface TestItemRow {
+export type TestItemRow = {
   id: string
   test_id: string
   order_num: number
@@ -42,7 +48,7 @@ export interface TestItemRow {
   scale_type: ScaleType
 }
 
-export interface SessionRow {
+export type SessionRow = {
   id: string
   test_id: string
   access_token: string
@@ -54,7 +60,7 @@ export interface SessionRow {
   expires_at: string | null
 }
 
-export interface ResponseRow {
+export type ResponseRow = {
   id: string
   session_id: string
   item_id: string
@@ -62,7 +68,7 @@ export interface ResponseRow {
   answered_at: string
 }
 
-export interface ResultRow {
+export type ResultRow = {
   id: string
   session_id: string
   raw_scores: Json
@@ -72,7 +78,7 @@ export interface ResultRow {
   generated_at: string
 }
 
-export interface CouponRow {
+export type CouponRow = {
   id: string
   code: string
   discount_type: DiscountType
@@ -85,7 +91,14 @@ export interface CouponRow {
   created_at: string
 }
 
-export interface PaymentRow {
+export type CouponRedemptionRow = {
+  id: string
+  coupon_id: string
+  session_id: string
+  redeemed_at: string
+}
+
+export type PaymentRow = {
   id: string
   session_id: string
   toss_payment_key: string | null
@@ -101,21 +114,57 @@ export type UseCouponResult =
   | { ok: true; discount_type: DiscountType; discount_value: number }
   | { ok: false; error: 'not_found' | 'expired' | 'exhausted' | 'already_used' }
 
-export interface Database {
+export type Database = {
   public: {
     Tables: {
-      tests: { Row: TestRow; Insert: Partial<TestRow>; Update: Partial<TestRow> }
-      test_items: { Row: TestItemRow; Insert: Partial<TestItemRow>; Update: Partial<TestItemRow> }
-      sessions: { Row: SessionRow; Insert: Partial<SessionRow>; Update: Partial<SessionRow> }
-      responses: { Row: ResponseRow; Insert: Partial<ResponseRow>; Update: Partial<ResponseRow> }
-      results: { Row: ResultRow; Insert: Partial<ResultRow>; Update: Partial<ResultRow> }
-      coupons: { Row: CouponRow; Insert: Partial<CouponRow>; Update: Partial<CouponRow> }
-      coupon_redemptions: {
-        Row: { id: string; coupon_id: string; session_id: string; redeemed_at: string }
-        Insert: Partial<{ id: string; coupon_id: string; session_id: string; redeemed_at: string }>
-        Update: Partial<{ id: string; coupon_id: string; session_id: string; redeemed_at: string }>
+      tests: {
+        Row: TestRow
+        Insert: Partial<TestRow>
+        Update: Partial<TestRow>
+        Relationships: []
       }
-      payments: { Row: PaymentRow; Insert: Partial<PaymentRow>; Update: Partial<PaymentRow> }
+      test_items: {
+        Row: TestItemRow
+        Insert: Partial<TestItemRow>
+        Update: Partial<TestItemRow>
+        Relationships: []
+      }
+      sessions: {
+        Row: SessionRow
+        Insert: Partial<SessionRow>
+        Update: Partial<SessionRow>
+        Relationships: []
+      }
+      responses: {
+        Row: ResponseRow
+        Insert: Partial<ResponseRow>
+        Update: Partial<ResponseRow>
+        Relationships: []
+      }
+      results: {
+        Row: ResultRow
+        Insert: Partial<ResultRow>
+        Update: Partial<ResultRow>
+        Relationships: []
+      }
+      coupons: {
+        Row: CouponRow
+        Insert: Partial<CouponRow>
+        Update: Partial<CouponRow>
+        Relationships: []
+      }
+      coupon_redemptions: {
+        Row: CouponRedemptionRow
+        Insert: Partial<CouponRedemptionRow>
+        Update: Partial<CouponRedemptionRow>
+        Relationships: []
+      }
+      payments: {
+        Row: PaymentRow
+        Insert: Partial<PaymentRow>
+        Update: Partial<PaymentRow>
+        Relationships: []
+      }
     }
     Views: Record<string, never>
     Functions: {
@@ -125,5 +174,6 @@ export interface Database {
       }
     }
     Enums: Record<string, never>
+    CompositeTypes: Record<string, never>
   }
 }

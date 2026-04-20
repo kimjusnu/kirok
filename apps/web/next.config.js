@@ -6,6 +6,7 @@ const nextConfig = {
     '@temperament/scoring',
     '@temperament/ai',
     '@temperament/db',
+    '@temperament/payments',
     '@temperament/shared',
   ],
 }
