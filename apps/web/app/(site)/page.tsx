@@ -66,7 +66,7 @@ export default function HomePage() {
             성격검사 · Big Five 모델
           </p>
 
-          <h1 className="mt-8 font-bold leading-[0.95] tracking-tight text-[clamp(2.8rem,10vw,7.5rem)]">
+          <h1 className="mt-8 font-bold leading-[0.95] tracking-tight text-[clamp(2.6rem,8.5vw,6rem)]">
             <span
               className="block line-reveal"
               style={{ ['--d' as string]: '120ms' }}
@@ -103,7 +103,7 @@ export default function HomePage() {
             </span>
           </h1>
 
-          <div className="mt-12 grid lg:grid-cols-2 gap-10 lg:gap-16 items-end">
+          <div className="mt-12 grid lg:grid-cols-2 gap-10 lg:gap-16 items-stretch">
             <div
               className="line-reveal"
               style={{ ['--d' as string]: '900ms' }}
@@ -122,10 +122,13 @@ export default function HomePage() {
             </div>
 
             <div
-              className="relative line-reveal"
+              className="relative line-reveal h-full"
               style={{ ['--d' as string]: '1100ms' }}
             >
-              <div className="relative corner-marks border border-[var(--line)] bg-white/70 backdrop-blur-sm px-6 py-6">
+              {/* 카드 높이를 왼쪽 텍스트 컬럼과 동일하게 맞추기 위해 h-full +
+                  flex column + justify-between. 위쪽 블록(스탯), 아래쪽 블록
+                  (CTA 버튼·안내)이 카드 상하로 자연스럽게 벌어진다. */}
+              <div className="relative corner-marks border border-[var(--line)] bg-white/70 backdrop-blur-sm px-6 py-6 h-full flex flex-col justify-between">
                 <span className="tl" />
                 <span className="tr" />
                 <span className="bl" />
@@ -155,21 +158,23 @@ export default function HomePage() {
                     </dd>
                   </div>
                 </dl>
-                <Link
-                  href="/test/ipip50"
-                  className="mt-5 inline-flex items-center justify-center w-full gap-2 text-[15px] font-medium px-6 py-3.5 bg-[var(--ink)] text-white rounded-sm hover:bg-black transition group"
-                >
-                  검사 시작
-                  <span
-                    aria-hidden
-                    className="transition-transform group-hover:translate-x-1"
+                <div className="mt-8">
+                  <Link
+                    href="/test/ipip50"
+                    className="inline-flex items-center justify-center w-full gap-2 text-[15px] font-medium px-6 py-3.5 bg-[var(--ink)] text-white rounded-sm hover:bg-black transition group"
                   >
-                    →
-                  </span>
-                </Link>
-                <p className="mt-3 text-[11px] text-[var(--ink-soft)] text-center">
-                  회원가입 없음 · 7일 유효
-                </p>
+                    검사 시작
+                    <span
+                      aria-hidden
+                      className="transition-transform group-hover:translate-x-1"
+                    >
+                      →
+                    </span>
+                  </Link>
+                  <p className="mt-3 text-[11px] text-[var(--ink-soft)] text-center">
+                    회원가입 없음 · 7일 유효
+                  </p>
+                </div>
               </div>
             </div>
           </div>

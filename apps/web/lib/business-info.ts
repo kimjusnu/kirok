@@ -9,7 +9,7 @@ export const BUSINESS_INFO = {
   representative: '김준수',
   businessRegistrationNumber: '507-06-66733',
   taxationType: '간이과세자',
-  address: '인천광역시 계양구 아나지로213번길 22, 102동 1206호(효성동, 풍림아파트)',
+  address: '인천광역시 계양구 아나지로213번길 22',
   businessType: '도매 및 소매업',
   businessCategory: '전자상거래 소매업',
   openedOn: '2026-04-20',
