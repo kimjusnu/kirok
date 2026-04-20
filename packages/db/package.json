@@ -7,7 +7,7 @@
   "scripts": {
     "type-check": "tsc --noEmit",
     "gen:types": "supabase gen types typescript --project-id $SUPABASE_PROJECT_ID > src/types.generated.ts",
-    "seed:tests": "tsx --env-file=../../.env.local scripts/seed-tests.ts"
+    "seed:tests": "tsx --env-file=../../apps/web/.env.local scripts/seed-tests.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",
