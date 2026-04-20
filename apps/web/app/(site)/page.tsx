@@ -66,7 +66,7 @@ export default function HomePage() {
             성격검사 · Big Five 모델
           </p>
 
-          <h1 className="mt-8 font-bold leading-[0.95] tracking-tight text-[clamp(2.6rem,8.5vw,6rem)]">
+          <h1 className="mt-8 font-bold leading-[0.95] tracking-tight text-[clamp(2.7rem,9vw,6.75rem)]">
             <span
               className="block line-reveal"
               style={{ ['--d' as string]: '120ms' }}
@@ -133,26 +133,30 @@ export default function HomePage() {
                 <span className="tr" />
                 <span className="bl" />
                 <span className="br" />
-                <dl className="grid grid-cols-3 gap-4 text-sm">
+                <dl className="grid grid-cols-3 gap-4">
                   <div>
                     <dt className="text-[10px] tracking-[0.15em] uppercase text-[var(--ink-soft)]">
                       소요
                     </dt>
-                    <dd className="mt-1 font-semibold">10분</dd>
+                    <dd className="mt-2 text-2xl font-semibold tracking-tight">
+                      10분
+                    </dd>
                   </div>
                   <div>
                     <dt className="text-[10px] tracking-[0.15em] uppercase text-[var(--ink-soft)]">
                       문항
                     </dt>
-                    <dd className="mt-1 font-semibold">50개</dd>
+                    <dd className="mt-2 text-2xl font-semibold tracking-tight">
+                      50개
+                    </dd>
                   </div>
                   <div>
                     <dt className="text-[10px] tracking-[0.15em] uppercase text-[var(--ink-soft)]">
                       가격
                     </dt>
-                    <dd className="mt-1 font-semibold">
+                    <dd className="mt-2 text-2xl font-semibold tracking-tight">
                       {SALE_PRICE.toLocaleString()}
-                      <span className="text-[var(--ink-soft)] line-through ml-1 font-normal text-xs">
+                      <span className="text-[var(--ink-soft)] line-through ml-1 font-normal text-sm">
                         {ANCHOR_PRICE.toLocaleString()}
                       </span>
                     </dd>
@@ -172,7 +176,7 @@ export default function HomePage() {
                     </span>
                   </Link>
                   <p className="mt-3 text-[11px] text-[var(--ink-soft)] text-center">
-                    회원가입 없음 · 7일 유효
+                    익명으로 10분, 리포트는 7일간 곁에.
                   </p>
                 </div>
               </div>
