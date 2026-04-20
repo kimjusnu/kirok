@@ -164,10 +164,12 @@ export default function HomePage() {
         <h2 className="mt-4 text-2xl sm:text-3xl font-semibold">자주 묻는 질문</h2>
         <dl className="mt-10 divide-y divide-[var(--line)]">
           <div className="py-6">
-            <dt className="font-semibold text-[15px]">정말 익명인가요?</dt>
+            <dt className="font-semibold text-[15px]">익명인가요?</dt>
             <dd className="mt-2 prose-editorial text-[14px]">
-              회원가입이 없어요. 결제 시점에 토스페이먼츠가 카드 정보를 처리하지만,
-              본 사이트의 DB에는 이메일·이름·전화번호가 저장되지 않습니다.
+              회원가입이 없어요. 시작 전에 리포트에 표시할 <strong>닉네임</strong>
+              과 <strong>성별·나이대</strong>만 수집하며(모두 "미응답" 선택 가능),
+              실명·이메일·전화번호는 저장하지 않습니다. 결제 시점엔 토스페이먼츠가
+              카드 정보를 처리할 뿐 본 사이트에는 남지 않아요.
             </dd>
           </div>
           <div className="py-6">

@@ -6,8 +6,15 @@ import { createServiceClient } from '@temperament/db'
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
+const ProfileSchema = z.object({
+  displayName: z.string().trim().min(1).max(40),
+  gender: z.enum(['male', 'female', 'other', 'prefer_not']),
+  ageRange: z.enum(['teens', '20s', '30s', '40s', '50s', '60_plus', 'prefer_not']),
+})
+
 const RequestSchema = z.object({
   testSlug: z.string().min(1).max(64),
+  profile: ProfileSchema,
 })
 
 function generateAccessToken(): string {
@@ -53,6 +60,19 @@ export async function POST(request: Request) {
     .single()
   if (insertError || !session) {
     console.error('sessions: insert failed', insertError)
+    return NextResponse.json({ error: 'internal_error' }, { status: 500 })
+  }
+
+  const { error: profileError } = await db.from('participant_profiles').insert({
+    session_id: session.id,
+    display_name: parsed.data.profile.displayName,
+    gender: parsed.data.profile.gender,
+    age_range: parsed.data.profile.ageRange,
+  })
+  if (profileError) {
+    console.error('sessions: profile insert failed', profileError)
+    // Roll back session so we don't leave it orphaned.
+    await db.from('sessions').delete().eq('id', session.id)
     return NextResponse.json({ error: 'internal_error' }, { status: 500 })
   }
 

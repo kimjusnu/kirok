@@ -59,12 +59,16 @@ function clearSaved(slug: string) {
 
 export function TestRunner({
   slug,
+  sessionId,
+  accessToken,
   nameKo,
   estimatedMinutes,
   items,
   translationNote,
 }: {
   slug: string
+  sessionId: string
+  accessToken: string
   nameKo: string
   estimatedMinutes: number
   items: Item[]
@@ -137,26 +141,8 @@ export function TestRunner({
     setSubmitting(true)
     setError(null)
     try {
-      // Create session if not yet created.
-      let saved = loadSaved(slug)
-      if (!saved.sessionId || !saved.accessToken) {
-        const res = await fetch('/api/sessions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ testSlug: slug }),
-        })
-        if (!res.ok) throw new Error('session_create_failed')
-        const body = await res.json()
-        saved = {
-          ...saved,
-          sessionId: body.sessionId,
-          accessToken: body.accessToken,
-        }
-        persist(slug, saved)
-      }
-
       const payload = {
-        sessionId: saved.sessionId,
+        sessionId,
         responses: Object.entries(responses).map(([order, score]) => ({
           order: Number(order),
           score,
@@ -172,14 +158,14 @@ export function TestRunner({
         throw new Error(body.error ?? 'submit_failed')
       }
 
-      // Move on — payment page is Phase 6B; for now, go to a placeholder.
-      router.push(`/test/${slug}/pay?sid=${saved.sessionId}&at=${saved.accessToken}`)
+      clearSaved(slug)
+      router.push(`/test/${slug}/pay?sid=${sessionId}&at=${accessToken}`)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'submit_failed')
     } finally {
       setSubmitting(false)
     }
-  }, [slug, responses, router])
+  }, [slug, sessionId, accessToken, responses, router])
 
   if (!hydrated) {
     return (

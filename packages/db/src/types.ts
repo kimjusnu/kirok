@@ -110,6 +110,18 @@ export type PaymentRow = {
   updated_at: string
 }
 
+export type Gender = 'male' | 'female' | 'other' | 'prefer_not'
+export type AgeRange = 'teens' | '20s' | '30s' | '40s' | '50s' | '60_plus' | 'prefer_not'
+
+export type ParticipantProfileRow = {
+  session_id: string
+  display_name: string
+  gender: Gender
+  age_range: AgeRange
+  consent_at: string
+  created_at: string
+}
+
 export type UseCouponResult =
   | { ok: true; discount_type: DiscountType; discount_value: number }
   | { ok: false; error: 'not_found' | 'expired' | 'exhausted' | 'already_used' }
@@ -163,6 +175,12 @@ export type Database = {
         Row: PaymentRow
         Insert: Partial<PaymentRow>
         Update: Partial<PaymentRow>
+        Relationships: []
+      }
+      participant_profiles: {
+        Row: ParticipantProfileRow
+        Insert: Partial<ParticipantProfileRow>
+        Update: Partial<ParticipantProfileRow>
         Relationships: []
       }
     }
