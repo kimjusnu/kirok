@@ -13,7 +13,7 @@ create table tests (
   description text,
   total_items int not null,
   estimated_minutes int not null,
-  price_krw int not null default 1200,
+  price_krw int not null default 1500,
   anchor_price_krw int not null default 9900,
   is_active boolean not null default true,
   created_at timestamptz not null default now()
@@ -130,7 +130,7 @@ create or replace function use_coupon(p_code text, p_session_id uuid)
 returns jsonb
 language plpgsql
 security definer
-as $$
+as $func$
 declare
   v_coupon coupons%rowtype;
   v_now timestamptz := now();
@@ -167,4 +167,4 @@ exception
   when unique_violation then
     return jsonb_build_object('ok', false, 'error', 'already_used');
 end;
-$$;
+$func$;
