@@ -71,10 +71,10 @@ export default function HomePage() {
               className="block line-reveal"
               style={{ ['--d' as string]: '120ms' }}
             >
-              같은 유형인데,
+              나도 몰랐던 나,
             </span>
             <span className="block mt-1">
-              {'왜 나는 '.split('').map((c, i) => (
+              {'10분이면 '.split('').map((c, i) => (
                 <span
                   key={`p-${i}`}
                   className="char-reveal"
@@ -84,11 +84,11 @@ export default function HomePage() {
                 </span>
               ))}
               <span className="highlight-bar">
-                {'다를까요'.split('').map((c, i) => (
+                {'압니다'.split('').map((c, i) => (
                   <span
                     key={`h-${i}`}
                     className="char-reveal"
-                    style={{ ['--d' as string]: `${260 + (5 + i) * 55}ms` }}
+                    style={{ ['--d' as string]: `${260 + (6 + i) * 55}ms` }}
                   >
                     {c}
                   </span>
@@ -98,7 +98,7 @@ export default function HomePage() {
                 className="char-reveal"
                 style={{ ['--d' as string]: `${260 + 9 * 55}ms` }}
               >
-                ?
+                .
               </span>
             </span>
           </h1>
