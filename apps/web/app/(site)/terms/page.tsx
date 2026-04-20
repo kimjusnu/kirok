@@ -1,10 +1,32 @@
 import type { Metadata } from 'next'
 import { BUSINESS_INFO } from '@/lib/business-info'
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+
 export const metadata: Metadata = {
-  title: '이용약관 · kirok',
-  description: '기록(kirok) 성격검사 서비스 이용약관',
+  title: '이용약관',
+  description:
+    'kirok(기록) Big Five 성격검사 서비스의 이용약관 전문. IPIP-50 기반 검사 제공, 결제·환불, 지적재산권, 면책 조항을 명시합니다.',
   alternates: { canonical: '/terms' },
+  openGraph: { title: '이용약관 · kirok', type: 'article' },
+}
+
+const ARTICLE_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: 'kirok 이용약관',
+  inLanguage: 'ko-KR',
+  datePublished: '2026-04-20',
+  dateModified: '2026-04-20',
+  author: {
+    '@type': 'Organization',
+    name: '기록(kirok)',
+    url: SITE_URL,
+  },
+  publisher: { '@id': `${SITE_URL}/#organization` },
+  mainEntityOfPage: `${SITE_URL}/terms`,
+  articleSection: '법정',
 }
 
 const SECTIONS: { title: string; body: string }[] = [
@@ -65,6 +87,10 @@ const SECTIONS: { title: string; body: string }[] = [
 export default function TermsPage() {
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ARTICLE_LD) }}
+      />
       <article className="max-w-2xl mx-auto px-6 py-12 sm:py-16">
         <header>
           <p className="text-[11px] tracking-[0.2em] uppercase text-[var(--ink-soft)]">
@@ -72,7 +98,10 @@ export default function TermsPage() {
           </p>
           <h1 className="mt-4 text-3xl font-semibold">이용약관</h1>
           <p className="mt-2 text-sm text-[var(--ink-muted)]">
-            시행일 2026-04-20
+            발행일{' '}
+            <time dateTime="2026-04-20">2026-04-20</time> · 최종 수정{' '}
+            <time dateTime="2026-04-20">2026-04-20</time> · 작성{' '}
+            <span>{BUSINESS_INFO.nameKo}</span>
           </p>
         </header>
 

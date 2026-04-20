@@ -31,19 +31,26 @@ const AI_CRAWLERS = [
 ]
 
 export default function robots(): MetadataRoute.Robots {
-  const adminDisallow = [`${ADMIN_BASE}/`, '/admin/', '/api/admin/']
+  // 개인 리포트 경로는 access_token이 URL에 노출되어 있어 크롤러가 긁으면
+  // 타인의 리포트에 접근하는 경로가 열리므로 전면 차단.
+  const globalDisallow = [
+    `${ADMIN_BASE}/`,
+    '/admin/',
+    '/api/admin/',
+    '/report/',
+  ]
 
   return {
     rules: [
       {
         userAgent: '*',
         allow: '/',
-        disallow: adminDisallow,
+        disallow: globalDisallow,
       },
       ...AI_CRAWLERS.map((ua) => ({
         userAgent: ua,
         allow: '/',
-        disallow: adminDisallow,
+        disallow: globalDisallow,
       })),
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,

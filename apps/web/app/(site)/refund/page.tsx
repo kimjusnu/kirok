@@ -1,10 +1,32 @@
 import type { Metadata } from 'next'
 import { BUSINESS_INFO } from '@/lib/business-info'
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+
 export const metadata: Metadata = {
-  title: '환불정책 · kirok',
-  description: '기록(kirok) 성격검사 리포트 환불정책',
+  title: '환불정책',
+  description:
+    'kirok(기록) Big Five 성격검사 리포트의 환불정책 전문. 리포트 열람 전은 전액 환불, 1회 이상 열람 후에는 디지털 콘텐츠 특성상 환불이 제한됩니다.',
   alternates: { canonical: '/refund' },
+  openGraph: { title: '환불정책 · kirok', type: 'article' },
+}
+
+const ARTICLE_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: 'kirok 환불정책',
+  inLanguage: 'ko-KR',
+  datePublished: '2026-04-20',
+  dateModified: '2026-04-20',
+  author: {
+    '@type': 'Organization',
+    name: '기록(kirok)',
+    url: SITE_URL,
+  },
+  publisher: { '@id': `${SITE_URL}/#organization` },
+  mainEntityOfPage: `${SITE_URL}/refund`,
+  articleSection: '법정',
 }
 
 const SECTIONS: { title: string; body: string }[] = [
@@ -47,6 +69,10 @@ const SECTIONS: { title: string; body: string }[] = [
 export default function RefundPage() {
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ARTICLE_LD) }}
+      />
       <article className="max-w-2xl mx-auto px-6 py-12 sm:py-16">
         <header>
           <p className="text-[11px] tracking-[0.2em] uppercase text-[var(--ink-soft)]">
@@ -54,7 +80,9 @@ export default function RefundPage() {
           </p>
           <h1 className="mt-4 text-3xl font-semibold">환불정책</h1>
           <p className="mt-2 text-sm text-[var(--ink-muted)]">
-            시행일 2026-04-20
+            발행일 <time dateTime="2026-04-20">2026-04-20</time> · 최종 수정{' '}
+            <time dateTime="2026-04-20">2026-04-20</time> · 작성{' '}
+            {BUSINESS_INFO.nameKo}
           </p>
         </header>
 

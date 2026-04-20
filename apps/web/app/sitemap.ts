@@ -17,23 +17,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.9,
     },
+    // 약관·정책: 신뢰·심사 관점에서 낮지 않게 잡아야 Naver/Google이 E-E-A-T
+    // 신호로 인식. 0.2 → 0.4.
     {
       url: `${SITE_URL}/terms`,
       lastModified: now,
       changeFrequency: 'yearly',
-      priority: 0.2,
+      priority: 0.4,
     },
     {
       url: `${SITE_URL}/privacy`,
       lastModified: now,
       changeFrequency: 'yearly',
-      priority: 0.2,
+      priority: 0.4,
     },
     {
       url: `${SITE_URL}/refund`,
       lastModified: now,
       changeFrequency: 'yearly',
-      priority: 0.2,
+      priority: 0.4,
     },
   ]
 }

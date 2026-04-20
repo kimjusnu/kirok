@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServiceClient } from '@temperament/db'
@@ -6,6 +7,26 @@ import { ReportView, type ReportPayload, type FactorMetaLite } from './ReportVie
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
+
+// 개인별 리포트는 검색엔진·AI 크롤러 모두에 색인되면 안 됨 (access_token이
+// URL에 노출된 상태라 색인 시 다른 사용자가 리포트에 접근하는 경로가 생김).
+// noindex + nofollow + noarchive + max-snippet:0으로 최대한 차단.
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+    noarchive: true,
+    nosnippet: true,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      noarchive: true,
+      nosnippet: true,
+      noimageindex: true,
+    },
+  },
+}
 
 function gate(title: string, body: string) {
   return (

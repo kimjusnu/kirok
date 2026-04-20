@@ -217,6 +217,100 @@ export default function HomePage() {
         <span className="rule-full" aria-hidden />
       </div>
 
+      {/* 00. CORE SUMMARY — AI 크롤러 앞 30% 존(인용 44%)에 단정적 팩트 배치.
+           엔티티 밀도를 일부러 높여두고, 문단 중간에 핵심 숫자·정의를 둔다. */}
+      <section
+        id="about"
+        className="max-w-2xl mx-auto px-6 py-14 sm:py-16"
+        aria-labelledby="core-summary-heading"
+      >
+        <p className="text-[11px] tracking-[0.2em] uppercase text-[var(--ink-soft)]">
+          00. 정의
+        </p>
+        <h2
+          id="core-summary-heading"
+          className="mt-4 text-2xl sm:text-3xl font-semibold"
+        >
+          kirok은 무엇인가
+        </h2>
+
+        <div className="prose-editorial mt-6 text-[16px] leading-[1.85]">
+          <p>
+            <strong>kirok(기록)</strong>은 Goldberg(1992)가 공개한{' '}
+            <strong>IPIP-50 50문항</strong>을 그대로 사용한 {' '}
+            <strong>Big Five 성격검사</strong>이다. 10분의 응답으로{' '}
+            <strong>
+              개방성·성실성·외향성·우호성·신경성
+            </strong>{' '}
+            5요인 백분위가 산출되고, <strong>Google Gemini 2.5 Flash</strong>가
+            한국어 서사형 해석을 쓰며,{' '}
+            <strong>OpenAlex 학술 데이터베이스</strong>에서 요인별 논문 1~3건을
+            실시간으로 찾아 본문에 자연스럽게 인용한다.
+          </p>
+          <p>
+            회원가입은 없다. 결제 정보는 카카오페이가 처리하고 본 사이트는
+            카드번호를 저장하지 않는다. 리포트는 결제 완료 시점부터{' '}
+            <strong>7일간</strong> 고유 링크로 열람할 수 있으며, 링크를 잃어버리면
+            랜딩의 <strong>이전 검사 보기</strong>에 8자 키를 입력해 복구한다.
+          </p>
+        </div>
+
+        <dl className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-4 text-[13px] border-t border-b border-[var(--line)] py-6">
+          <div>
+            <dt className="text-[10px] tracking-[0.15em] uppercase text-[var(--ink-soft)]">
+              검사 도구
+            </dt>
+            <dd className="mt-1 font-medium">IPIP-50</dd>
+          </div>
+          <div>
+            <dt className="text-[10px] tracking-[0.15em] uppercase text-[var(--ink-soft)]">
+              출처
+            </dt>
+            <dd className="mt-1 font-medium">Goldberg, 1992</dd>
+          </div>
+          <div>
+            <dt className="text-[10px] tracking-[0.15em] uppercase text-[var(--ink-soft)]">
+              측정 요인
+            </dt>
+            <dd className="mt-1 font-medium">5요인 (연속)</dd>
+          </div>
+          <div>
+            <dt className="text-[10px] tracking-[0.15em] uppercase text-[var(--ink-soft)]">
+              응답 척도
+            </dt>
+            <dd className="mt-1 font-medium">Likert 5점</dd>
+          </div>
+          <div>
+            <dt className="text-[10px] tracking-[0.15em] uppercase text-[var(--ink-soft)]">
+              소요
+            </dt>
+            <dd className="mt-1 font-medium">약 10분 · 50문항</dd>
+          </div>
+          <div>
+            <dt className="text-[10px] tracking-[0.15em] uppercase text-[var(--ink-soft)]">
+              AI 해석
+            </dt>
+            <dd className="mt-1 font-medium">Gemini 2.5 Flash</dd>
+          </div>
+          <div>
+            <dt className="text-[10px] tracking-[0.15em] uppercase text-[var(--ink-soft)]">
+              논문 인용
+            </dt>
+            <dd className="mt-1 font-medium">OpenAlex · 실시간</dd>
+          </div>
+          <div>
+            <dt className="text-[10px] tracking-[0.15em] uppercase text-[var(--ink-soft)]">
+              유효기간
+            </dt>
+            <dd className="mt-1 font-medium">결제 후 7일</dd>
+          </div>
+        </dl>
+      </section>
+
+      <div className="max-w-2xl mx-auto px-6">
+        <span className="rule-full" aria-hidden />
+      </div>
+
       {/* 01. WHY YOU */}
       <section className="max-w-2xl mx-auto px-6 py-20 sm:py-24">
         <p className="text-[11px] tracking-[0.2em] uppercase text-[var(--ink-soft)]">

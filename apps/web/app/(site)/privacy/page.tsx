@@ -1,10 +1,32 @@
 import type { Metadata } from 'next'
 import { BUSINESS_INFO } from '@/lib/business-info'
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+
 export const metadata: Metadata = {
-  title: '개인정보처리방침 · kirok',
-  description: '기록(kirok) 성격검사 서비스 개인정보처리방침',
+  title: '개인정보처리방침',
+  description:
+    'kirok(기록) Big Five 성격검사 서비스의 개인정보처리방침 전문. 수집 항목·목적·보유기간·위탁처리업체를 명시합니다. 실명·연락처는 수집하지 않습니다.',
   alternates: { canonical: '/privacy' },
+  openGraph: { title: '개인정보처리방침 · kirok', type: 'article' },
+}
+
+const ARTICLE_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: 'kirok 개인정보처리방침',
+  inLanguage: 'ko-KR',
+  datePublished: '2026-04-20',
+  dateModified: '2026-04-20',
+  author: {
+    '@type': 'Organization',
+    name: '기록(kirok)',
+    url: SITE_URL,
+  },
+  publisher: { '@id': `${SITE_URL}/#organization` },
+  mainEntityOfPage: `${SITE_URL}/privacy`,
+  articleSection: '법정',
 }
 
 const SECTIONS: { title: string; body: string }[] = [
@@ -97,6 +119,10 @@ const SECTIONS: { title: string; body: string }[] = [
 export default function PrivacyPage() {
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ARTICLE_LD) }}
+      />
       <article className="max-w-2xl mx-auto px-6 py-12 sm:py-16">
         <header>
           <p className="text-[11px] tracking-[0.2em] uppercase text-[var(--ink-soft)]">
@@ -104,7 +130,9 @@ export default function PrivacyPage() {
           </p>
           <h1 className="mt-4 text-3xl font-semibold">개인정보처리방침</h1>
           <p className="mt-2 text-sm text-[var(--ink-muted)]">
-            시행일 2026-04-20
+            발행일 <time dateTime="2026-04-20">2026-04-20</time> · 최종 수정{' '}
+            <time dateTime="2026-04-20">2026-04-20</time> · 개인정보
+            보호책임자 {BUSINESS_INFO.privacyOfficer}
           </p>
         </header>
 
