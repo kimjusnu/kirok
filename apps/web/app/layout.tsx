@@ -1,52 +1,71 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import './globals.css'
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+const SITE_NAME = 'kirok'
+const SITE_TAGLINE = 'kirok · 정밀 기질검사'
+const SITE_DESCRIPTION =
+  'Goldberg IPIP Big-Five 50문항 기반 5요인 성격검사. 요인별 백분위와 한국어 AI 해석, OpenAlex에서 실시간 검색한 학술 논문 인용까지. 10분, 익명, 1,900원 (쿠폰 시 무료).'
+
 export const metadata: Metadata = {
-  title: { default: 'kirok · 정밀 기질검사', template: '%s · kirok' },
-  description:
-    'Goldberg IPIP Big-Five 50문항 · AI 해석 · 학술 논문 자동 인용 · 익명 1,500원 (커피 한 잔 값)',
+  metadataBase: new URL(SITE_URL),
+  title: { default: SITE_TAGLINE, template: '%s · kirok' },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  authors: [{ name: 'kirok' }],
+  keywords: [
+    'Big Five',
+    'IPIP-50',
+    'Goldberg',
+    '5요인 성격검사',
+    '성격검사',
+    '기질검사',
+    'AI 해석',
+    'OpenAlex',
+    '심리검사',
+    'MBTI 대안',
+  ],
+  alternates: { canonical: '/' },
   openGraph: {
-    title: 'kirok · 정밀 기질검사',
-    description:
-      '논문 기반 Big Five 검사 · AI 해석과 자동 인용 · 익명 1회 1,500원 · 쿠폰 시 무료',
+    siteName: SITE_NAME,
+    title: SITE_TAGLINE,
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
     locale: 'ko_KR',
     type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: SITE_TAGLINE,
+    description: SITE_DESCRIPTION,
   },
   robots: { index: true, follow: true },
 }
 
-function SiteHeader() {
-  return (
-    <header className="border-b border-[var(--line)]">
-      <div className="max-w-2xl mx-auto px-6 h-14 flex items-center justify-between">
-        <Link href="/" className="text-[15px] tracking-tight font-semibold">
-          kirok
-        </Link>
-        <nav className="text-xs text-[var(--ink-muted)]">
-          <Link href="/test/ipip50" className="link-underline">
-            검사 시작
-          </Link>
-        </nav>
-      </div>
-    </header>
-  )
+const ORGANIZATION_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: SITE_NAME,
+  url: SITE_URL,
+  logo: `${SITE_URL}/icon`,
+  description: SITE_DESCRIPTION,
+  knowsAbout: [
+    'Big Five personality model',
+    'IPIP-50',
+    'Five-Factor Model',
+    'Personality assessment',
+    'Psychometrics',
+  ],
 }
 
-function SiteFooter() {
-  return (
-    <footer className="mt-16 border-t border-[var(--line)]">
-      <div className="max-w-2xl mx-auto px-6 py-10 text-xs text-[var(--ink-soft)] leading-relaxed">
-        <div className="flex items-baseline justify-between">
-          <span className="font-semibold text-[var(--ink)]">kirok</span>
-          <span>Goldberg (1992) · Public domain items</span>
-        </div>
-        <p className="mt-3">
-          본 검사는 자기이해 목적의 참고 자료이며, 임상 진단이 아닙니다.
-        </p>
-      </div>
-    </footer>
-  )
+const WEBSITE_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: SITE_NAME,
+  url: SITE_URL,
+  inLanguage: 'ko-KR',
+  description: SITE_DESCRIPTION,
+  publisher: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
 }
 
 export default function RootLayout({
@@ -57,9 +76,15 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className="bg-white text-[var(--ink)]">
-        <SiteHeader />
         {children}
-        <SiteFooter />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_LD) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_LD) }}
+        />
       </body>
     </html>
   )
