@@ -118,7 +118,7 @@ export default async function AdminCouponsPage() {
             <p className="mt-1 text-[12px] text-[var(--ink-muted)] leading-relaxed">
               <code className="font-mono">coupons.is_public</code> 컬럼이 DB에
               없어서 공개/비공개 토글이 작동하지 않습니다. 모든 쿠폰은
-              일시적으로 "비공개"로 표시됩니다. Supabase SQL Editor에서 아래 2줄
+              일시적으로 “비공개”로 표시됩니다. Supabase SQL Editor에서 아래 2줄
               실행 후 새로고침하세요:
             </p>
             <pre className="mt-2 text-[11px] font-mono bg-white px-3 py-2 border border-yellow-600/30 overflow-x-auto">

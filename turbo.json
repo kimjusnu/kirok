@@ -1,5 +1,18 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalEnv": [
+    "NODE_ENV",
+    "NEXT_PUBLIC_SITE_URL",
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "GEMINI_API_KEY",
+    "KAKAO_PAY_SECRET_KEY",
+    "KAKAO_PAY_CID",
+    "ADMIN_PASSWORD",
+    "ADMIN_COOKIE_SECRET",
+    "ADMIN_BASE_PATH"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
