@@ -13,7 +13,7 @@ const FAQ_LD = {
       name: 'MBTI 결과랑은 어떻게 다른가요?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'MBTI는 16개 유형 중 하나로 사람을 분류합니다. 같은 INFP 안에서도 사람마다 실제 성격은 크게 다릅니다. Big Five는 유형이 아니라 다섯 개 축에서의 연속 점수로 표시하기 때문에, 같은 축에서도 상위 10%인지 상위 40%인지에 따라 전혀 다른 특성으로 나타납니다. 학술적으로는 Big Five의 재검사 신뢰도와 예측 타당도가 MBTI보다 일관되게 높다고 보고됩니다.',
+        text: 'MBTI는 사람을 16개 유형 중 하나로 분류합니다. 같은 INFP라도 사람마다 실제 성격은 꽤 다릅니다. Big Five는 유형을 붙이는 대신 다섯 가지 성향이 각각 얼마나 강한지를 숫자로 보여 줍니다. 그래서 같은 특성을 가진 사람끼리도 누가 더 강한 편인지까지 구분할 수 있습니다. 학술적으로는 Big Five의 재검사 신뢰도와 예측 타당도가 MBTI보다 일관되게 높다고 보고됩니다.',
       },
     },
     {
@@ -71,12 +71,12 @@ export default function HomePage() {
               className="block line-reveal"
               style={{ ['--d' as string]: '120ms' }}
             >
-              유형이 아닌,
+              같은 유형인데,
             </span>
             <span className="block mt-1">
-              {'축으로 보는 '.split('').map((c, i) => (
+              {'왜 나는 '.split('').map((c, i) => (
                 <span
-                  key={`a-${i}`}
+                  key={`p-${i}`}
                   className="char-reveal"
                   style={{ ['--d' as string]: `${260 + i * 55}ms` }}
                 >
@@ -84,18 +84,21 @@ export default function HomePage() {
                 </span>
               ))}
               <span className="highlight-bar">
-                <span
-                  className="char-reveal"
-                  style={{ ['--d' as string]: `${260 + 6 * 55}ms` }}
-                >
-                  나
-                </span>
+                {'다를까요'.split('').map((c, i) => (
+                  <span
+                    key={`h-${i}`}
+                    className="char-reveal"
+                    style={{ ['--d' as string]: `${260 + (5 + i) * 55}ms` }}
+                  >
+                    {c}
+                  </span>
+                ))}
               </span>
               <span
                 className="char-reveal"
-                style={{ ['--d' as string]: `${260 + 7 * 55}ms` }}
+                style={{ ['--d' as string]: `${260 + 9 * 55}ms` }}
               >
-                .
+                ?
               </span>
             </span>
           </h1>
@@ -106,14 +109,15 @@ export default function HomePage() {
               style={{ ['--d' as string]: '900ms' }}
             >
               <p className="prose-editorial text-[17px] lg:text-[19px] max-w-xl">
-                MBTI가 사람을 16개의 상자에 나눠 담는다면, Big Five는 다섯 개의
-                축 위에서 당신의 위치를 백분위로 보여 줍니다. 같은 유형 안에서도
-                사람이 서로 다른 이유는, 원래 성격이 유형이 아니라{' '}
-                <strong>축의 조합</strong>이기 때문입니다.
+                같은 INFP인데도 어떤 친구는 낯선 사람과 5분이면 말이 통하고,
+                어떤 친구는 30분이 지나도 조용합니다. 유형 하나로 사람을 다
+                설명할 수는 없습니다. kirok은 당신의 성격을{' '}
+                <strong>다섯 가지 면</strong>에서 자세히 들여다보고, 각각 어느
+                쪽으로 얼마나 치우쳤는지 한국어 문장으로 풀어 드립니다.
               </p>
               <p className="prose-editorial mt-5 text-[14px] text-[var(--ink-muted)] max-w-lg">
-                10분의 50문항, AI가 써 주는 한국어 해석, 그리고 진짜 학술 논문
-                링크가 붙은 익명 리포트 — 커피 한 잔 값에.
+                10분이면 끝나는 50문항, AI가 써 주는 한국어 해석, 진짜 학술
+                논문이 붙은 익명 리포트를 커피 한 잔 값에 받습니다.
               </p>
             </div>
 
@@ -237,21 +241,20 @@ export default function HomePage() {
         <div className="prose-editorial mt-6 text-[16px] leading-[1.85]">
           <p>
             <strong>kirok(기록)</strong>은 Goldberg(1992)가 공개한{' '}
-            <strong>IPIP-50 50문항</strong>을 그대로 사용한 {' '}
-            <strong>Big Five 성격검사</strong>이다. 10분의 응답으로{' '}
-            <strong>
-              개방성·성실성·외향성·우호성·신경성
-            </strong>{' '}
-            5요인 백분위가 산출되고, <strong>Google Gemini 2.5 Flash</strong>가
-            한국어 서사형 해석을 쓰며,{' '}
-            <strong>OpenAlex 학술 데이터베이스</strong>에서 요인별 논문 1~3건을
-            실시간으로 찾아 본문에 자연스럽게 인용한다.
+            <strong>IPIP-50 50문항</strong>을 그대로 사용한{' '}
+            <strong>Big Five 성격검사</strong>입니다. 10분의 응답으로{' '}
+            <strong>개방성·성실성·외향성·우호성·신경성</strong> 다섯 가지
+            성향이 각각 어느 쪽으로 얼마나 치우쳤는지 수치로 정리되고,{' '}
+            <strong>Google Gemini 2.5 Flash</strong>가 한국어 서사형 해석을
+            쓰며, <strong>OpenAlex 학술 데이터베이스</strong>에서 요인별 논문
+            1~3건을 실시간으로 찾아 본문에 자연스럽게 인용합니다.
           </p>
           <p>
-            회원가입은 없다. 결제 정보는 카카오페이가 처리하고 본 사이트는
-            카드번호를 저장하지 않는다. 리포트는 결제 완료 시점부터{' '}
-            <strong>7일간</strong> 고유 링크로 열람할 수 있으며, 링크를 잃어버리면
-            랜딩의 <strong>이전 검사 보기</strong>에 8자 키를 입력해 복구한다.
+            회원가입은 없습니다. 결제 정보는 카카오페이가 처리하고 본 사이트는
+            카드번호를 저장하지 않습니다. 리포트는 결제 완료 시점부터{' '}
+            <strong>7일간</strong> 고유 링크로 열람할 수 있고, 링크를
+            잃어버리면 랜딩의 <strong>이전 검사 보기</strong>에 8자 키를 입력해
+            다시 여실 수 있습니다.
           </p>
         </div>
 
@@ -331,10 +334,11 @@ export default function HomePage() {
             때, 반박도 수긍도 애매한 이유입니다.
           </p>
           <p>
-            성격 축 위의 내 위치를 숫자로 확인하면, 지금까지 막연하게 ‘그냥
-            그런 거’였던 패턴이 처음으로 언어가 됩니다. 유형 이름보다 정확한
-            자기 설명이 생기고, 그때부터 어떤 일에 에너지를 쓰고 어떤 일은
-            피해야 할지 판단이 조금 더 선명해집니다.
+            다섯 가지 성향이 내 안에서 얼마나 강한지를 숫자로 확인하면, 지금까지
+            막연하게 ‘그냥 그런 거’였던 패턴이 처음으로 말이 됩니다. 유형
+            이름보다 한 걸음 더 구체적인 자기 설명이 생기고, 그때부터 어떤
+            일에 에너지를 쓰고 어떤 일은 피해야 할지 판단이 조금 더
+            선명해집니다.
           </p>
         </div>
       </section>
@@ -360,9 +364,9 @@ export default function HomePage() {
           </p>
           <p>
             MBTI가 주로 상업 컨설팅과 온라인 밈으로 퍼진 반면, Big Five는 학술
-            논문 안에서 검증을 거쳐 온 모델입니다. 유형을 붙여 주는 대신 다섯
-            개의 축에서 각자의 위치를 알려 주기 때문에, 한 사람을 16분의 1로
-            압축하지 않고 그대로 설명할 수 있습니다.
+            논문 안에서 검증을 거쳐 온 모델입니다. 유형 하나로 묶는 대신 다섯
+            가지 성향이 내 안에서 각각 얼마나 강한지 알려 주기 때문에, 한
+            사람을 16분의 1로 압축하지 않고 있는 그대로 설명할 수 있습니다.
           </p>
           <p>
             이 사이트는 Goldberg(1992)가 공개 도메인으로 제공하는 IPIP-50을
@@ -393,9 +397,12 @@ export default function HomePage() {
               01
             </span>
             <div>
-              <div className="font-medium">5요인 점수·백분위·레이더 차트</div>
+              <div className="font-medium">
+                다섯 가지 성향 점수와 레이더 차트
+              </div>
               <div className="mt-1 text-[13px] text-[var(--ink-muted)]">
-                같은 또래와 비교했을 때의 상대 위치까지 한 장에.
+                같은 또래와 비교했을 때 어느 쪽으로 얼마나 치우쳤는지 한 장에
+                담아 드립니다.
               </div>
             </div>
           </li>
@@ -514,12 +521,12 @@ export default function HomePage() {
               MBTI 결과랑은 어떻게 다른가요?
             </dt>
             <dd className="mt-2 prose-editorial text-[14px]">
-              MBTI는 16개 유형 중 하나로 분류합니다. 같은 INFP 안에서도
-              사람마다 실제 성격은 크게 다르죠. Big Five는 유형이 아니라 다섯
-              개 축의 <strong>연속 점수</strong>로 표시하기 때문에, 같은 축에서도
-              상위 10%인지 40%인지에 따라 전혀 다른 특성으로 나타납니다. 학술
-              쪽에서는 Big Five의 재검사 신뢰도와 예측 타당도가 MBTI보다
-              일관되게 높다고 보고됩니다.
+              MBTI는 사람을 16개 유형 중 하나로 분류합니다. 같은 INFP라도
+              사람마다 실제 성격은 꽤 다르죠. Big Five는 유형을 붙이는 대신{' '}
+              <strong>다섯 가지 성향이 각각 얼마나 강한지</strong>를 숫자로
+              보여 줍니다. 그래서 같은 특성을 가진 사람끼리도 누가 더 강한
+              편인지까지 구분할 수 있어요. 학술 쪽에서는 Big Five의 재검사
+              신뢰도와 예측 타당도가 MBTI보다 일관되게 높다고 보고됩니다.
             </dd>
           </div>
           <div className="py-6">
