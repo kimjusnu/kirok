@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { unstable_noStore as noStore } from 'next/cache'
 import { createServiceClient } from '@temperament/db'
 import { getAdminBasePath } from '@/lib/admin-path'
 import { firstEmbed } from '@/lib/supabase-embed'
@@ -6,6 +7,7 @@ import { SessionRowActions } from './SessionRowActions'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
 
 const PAGE_SIZE = 100
 
@@ -150,6 +152,7 @@ export default async function AdminSessionsPage({
 }: {
   searchParams: Record<string, string | string[] | undefined>
 }) {
+  noStore()
   const base = getAdminBasePath()
   const filters = parseFilters(searchParams)
   const rows = await fetchRows(filters)

@@ -1,10 +1,15 @@
 import Link from 'next/link'
+import { unstable_noStore as noStore } from 'next/cache'
 import { createServiceClient } from '@temperament/db'
 import { getAdminBasePath } from '@/lib/admin-path'
 import { CouponRow } from './CouponRow'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
+// `dynamic = force-dynamic`만으로는 Supabase 내부 fetch가 Next.js의 Data Cache
+// 레이어에 잡히는 경우가 있다(특히 Vercel 프로덕션 + 미들웨어 rewrite 조합).
+// noStore()를 명시적으로 호출해 모든 캐싱 레이어를 opt-out.
+export const fetchCache = 'force-no-store'
 
 const TYPE_LABEL: Record<string, string> = {
   free: '무료',
@@ -18,6 +23,7 @@ function fmt(s: string | null | undefined): string {
 }
 
 export default async function AdminCouponsPage() {
+  noStore()
   const base = getAdminBasePath()
   const db = createServiceClient()
   const { data, error } = await db

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { useRouter } from 'next/navigation'
 import { adminBasePathFromLocation } from '@/lib/admin-path'
 
 export function CouponRow({
@@ -25,7 +24,6 @@ export function CouponRow({
   isActive: boolean
   note: string | null
 }) {
-  const router = useRouter()
   const [active, setActive] = useState(isActive)
   const [pending, start] = useTransition()
   const [deleting, setDeleting] = useState(false)
@@ -56,7 +54,9 @@ export function CouponRow({
         setError(body.error ?? 'toggle_failed')
         return
       }
-      router.refresh()
+      // router.refresh()가 Vercel 프로덕션에서 미들웨어 rewrite 경로의 route
+      // 캐시를 뚫지 못하는 사례가 있음. 하드 리로드로 확실히 최신 상태 노출.
+      window.location.reload()
     })
   }
 
@@ -89,7 +89,7 @@ export function CouponRow({
         setError(`${body.error ?? `HTTP_${res.status}`}${detail}`)
         return
       }
-      router.refresh()
+      window.location.reload()
     } catch (e) {
       setError(e instanceof Error ? e.message : 'delete_failed')
     } finally {

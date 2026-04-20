@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { adminBasePathFromLocation } from '@/lib/admin-path'
 
@@ -14,7 +13,6 @@ export function SessionRowActions({
   label: string | null
   detailHref: string
 }) {
-  const router = useRouter()
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -40,7 +38,9 @@ export function SessionRowActions({
         setError(`${body.error ?? `HTTP_${res.status}`}${detail}`)
         return
       }
-      router.refresh()
+      // Vercel 프로덕션의 route 캐시가 stale하게 유지되는 사례가 있어
+      // 하드 리로드로 확실히 갱신.
+      window.location.reload()
     } catch (e) {
       setError(e instanceof Error ? e.message : 'delete_failed')
     } finally {
