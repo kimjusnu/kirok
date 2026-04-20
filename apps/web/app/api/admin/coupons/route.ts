@@ -45,27 +45,41 @@ export async function POST(request: Request) {
   const d = parsed.data
 
   const db = createServiceClient()
-  const { data, error } = await db
+  const base = {
+    code: d.code,
+    discount_type: d.discountType,
+    discount_value: d.discountValue,
+    max_uses: d.maxUses ?? null,
+    expires_at: d.expiresAt ?? null,
+    note: d.note ?? null,
+    is_active: true,
+  }
+
+  // 먼저 is_public 포함해서 insert 시도. 컬럼 부재(42703/PGRST204)면 레거시
+  // 스키마로 폴백 — 마이그레이션 0008이 아직 프로덕션에 적용 안 됐어도
+  // 쿠폰 발급 자체는 끊기지 않게 한다.
+  let result = await db
     .from('coupons')
-    .insert({
-      code: d.code,
-      discount_type: d.discountType,
-      discount_value: d.discountValue,
-      max_uses: d.maxUses ?? null,
-      expires_at: d.expiresAt ?? null,
-      note: d.note ?? null,
-      is_active: true,
-      is_public: d.isPublic ?? false,
-    })
+    .insert({ ...base, is_public: d.isPublic ?? false })
     .select('id, code')
     .single()
 
-  if (error) {
-    if ((error as { code?: string }).code === '23505') {
+  if (result.error) {
+    const code = (result.error as { code?: string }).code
+    if (code === '42703' || code === 'PGRST204') {
+      result = await db.from('coupons').insert(base).select('id, code').single()
+    }
+  }
+
+  if (result.error) {
+    if ((result.error as { code?: string }).code === '23505') {
       return NextResponse.json({ error: 'code_already_exists' }, { status: 409 })
     }
-    console.error('admin/coupons: insert failed', error)
-    return NextResponse.json({ error: 'internal_error' }, { status: 500 })
+    console.error('admin/coupons: insert failed', result.error)
+    return NextResponse.json(
+      { error: 'internal_error', message: result.error.message },
+      { status: 500 },
+    )
   }
-  return NextResponse.json({ ok: true, id: data.id, code: data.code })
+  return NextResponse.json({ ok: true, id: result.data.id, code: result.data.code })
 }

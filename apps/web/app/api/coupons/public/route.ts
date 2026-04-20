@@ -23,6 +23,12 @@ export async function GET() {
     .order('discount_value', { ascending: false })
 
   if (error) {
+    // 마이그레이션 0008 미적용(is_public 컬럼 부재) → 공개 쿠폰이 "없음"으로
+    // 안전하게 폴백. 사용자는 "기타 쿠폰 직접 입력"으로 코드 입력해서 쓰면 됨.
+    const code = (error as { code?: string }).code
+    if (code === '42703' || code === 'PGRST204') {
+      return NextResponse.json({ coupons: [] })
+    }
     console.error('coupons/public: query failed', error)
     return NextResponse.json({ coupons: [] })
   }
