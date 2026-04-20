@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { createServiceClient } from '@temperament/db'
 import { getAdminBasePath } from '@/lib/admin-path'
 import { firstEmbed } from '@/lib/supabase-embed'
+import { SessionRowActions } from './SessionRowActions'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -305,13 +306,12 @@ export default async function AdminSessionsPage({
                         ? `${(r.payment_amount ?? 0).toLocaleString()}원`
                         : '—'}
                     </td>
-                    <td className="py-3 text-right">
-                      <Link
-                        href={`${base}/sessions/${r.id}`}
-                        className="text-xs link-underline"
-                      >
-                        상세 →
-                      </Link>
+                    <td className="py-3">
+                      <SessionRowActions
+                        sessionId={r.id}
+                        label={profile?.display_name ?? null}
+                        detailHref={`${base}/sessions/${r.id}`}
+                      />
                     </td>
                   </tr>
                 )

@@ -49,8 +49,16 @@ export function NewCouponForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error ?? 'create_failed')
+      const data = await res.json().catch(() => ({}) as { error?: string })
+      if (!res.ok) {
+        // 409: 같은 코드가 이미 있어요.
+        if (res.status === 409 || data.error === 'code_already_exists') {
+          throw new Error(
+            `이미 "${body.code as string}" 코드의 쿠폰이 있어요. 목록에서 삭제 후 다시 만들거나 다른 코드를 쓰세요.`,
+          )
+        }
+        throw new Error(data.error ?? `HTTP_${res.status}`)
+      }
       router.push(`${base}/coupons`)
       router.refresh()
     } catch (err) {
