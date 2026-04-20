@@ -22,6 +22,7 @@ export type Json =
 export type ScaleType = 'likert5' | 'likert7'
 export type DiscountType = 'percent' | 'fixed' | 'free'
 export type PaymentStatus = 'pending' | 'completed' | 'failed' | 'canceled'
+export type PaymentProvider = 'toss' | 'kakao'
 
 export type TestRow = {
   id: string
@@ -101,8 +102,9 @@ export type CouponRedemptionRow = {
 export type PaymentRow = {
   id: string
   session_id: string
-  toss_payment_key: string | null
-  toss_order_id: string | null
+  provider: PaymentProvider
+  provider_payment_key: string | null
+  provider_order_id: string | null
   amount: number
   status: PaymentStatus
   raw_response: Json | null

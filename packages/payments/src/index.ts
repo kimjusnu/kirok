@@ -1,3 +1,3 @@
 export * from './coupon'
 export * from './schema'
-export * from './toss'
+export * from './kakao'

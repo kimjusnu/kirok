@@ -4,8 +4,14 @@ export const dynamic = 'force-dynamic'
 
 type SearchParams = {
   sid?: string
+  reason?: string
   code?: string
   message?: string
+}
+
+const REASON_LABEL: Record<string, string> = {
+  cancel: '사용자가 결제를 취소했습니다.',
+  fail: '카카오페이에서 결제가 실패했습니다.',
 }
 
 export default function PaymentFailPage({
@@ -15,6 +21,11 @@ export default function PaymentFailPage({
   params: { slug: string }
   searchParams: SearchParams
 }) {
+  const reasonText =
+    searchParams.reason && REASON_LABEL[searchParams.reason]
+      ? REASON_LABEL[searchParams.reason]
+      : null
+
   return (
     <main>
       <div className="max-w-xl mx-auto px-6 py-16">
@@ -23,8 +34,10 @@ export default function PaymentFailPage({
         </p>
         <h1 className="mt-4 text-2xl font-semibold">결제가 완료되지 않았습니다</h1>
         <p className="mt-4 prose-editorial text-[15px]">
-          결제 과정에서 문제가 발생했어요. 다시 시도해 주시거나, 쿠폰이 있다면 쿠폰
-          코드를 입력해 무료로 받을 수도 있습니다.
+          {reasonText ??
+            '결제 과정에서 문제가 발생했어요.'}{' '}
+          다시 시도해 주시거나, 쿠폰이 있다면 쿠폰 코드를 입력해 무료로 받을
+          수도 있습니다.
         </p>
 
         {(searchParams.code || searchParams.message) && (

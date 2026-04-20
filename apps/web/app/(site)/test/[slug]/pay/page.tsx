@@ -88,8 +88,6 @@ export default async function PayPage({
     )
   }
 
-  const clientKey = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY ?? ''
-
   return (
     <main>
       <PaymentClient
@@ -98,7 +96,6 @@ export default async function PayPage({
         sessionId={session.id}
         basePriceKrw={testMeta.price_krw}
         anchorPriceKrw={testMeta.anchor_price_krw}
-        tossClientKey={clientKey}
       />
     </main>
   )

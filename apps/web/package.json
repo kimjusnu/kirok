@@ -16,7 +16,6 @@
     "@temperament/scoring": "workspace:*",
     "@temperament/shared": "workspace:*",
     "@temperament/tests": "workspace:*",
-    "@tosspayments/tosspayments-sdk": "^2.6.0",
     "next": "^14.2.15",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
