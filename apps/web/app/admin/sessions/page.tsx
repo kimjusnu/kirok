@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createServiceClient } from '@temperament/db'
 import { getAdminBasePath } from '@/lib/admin-path'
+import { firstEmbed } from '@/lib/supabase-embed'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -64,6 +65,12 @@ function fmtDate(s: string): string {
   return `${d.getFullYear()}-${mm}-${dd} ${hh}:${mi}`
 }
 
+type ParticipantProfileLite = {
+  display_name: string
+  gender: string
+  age_range: string
+}
+
 type SessionRow = {
   id: string
   access_token: string
@@ -72,8 +79,11 @@ type SessionRow = {
   paid_at: string | null
   payment_amount: number | null
   tests: { slug: string; name_ko: string } | null
+  // PostgREST는 1:1 관계(participant_profiles.session_id PK)를 단일 객체로
+  // 돌려주지만, 일부 쿼리 모양에선 배열로도 올 수 있어 둘 다 허용.
   participant_profiles:
-    | { display_name: string; gender: string; age_range: string }[]
+    | ParticipantProfileLite
+    | ParticipantProfileLite[]
     | null
 }
 
@@ -264,7 +274,7 @@ export default async function AdminSessionsPage({
                 </tr>
               )}
               {rows.map((r) => {
-                const profile = r.participant_profiles?.[0]
+                const profile = firstEmbed(r.participant_profiles)
                 const status = r.paid_at
                   ? 'paid'
                   : r.completed_at

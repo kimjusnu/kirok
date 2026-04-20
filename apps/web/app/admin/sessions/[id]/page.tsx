@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServiceClient } from '@temperament/db'
 import { getAdminBasePath } from '@/lib/admin-path'
+import { firstEmbed } from '@/lib/supabase-embed'
 import { RegenerateButton } from './RegenerateButton'
 
 export const runtime = 'nodejs'
@@ -54,10 +55,30 @@ export default async function AdminSessionDetailPage({
   }
   if (!session) notFound()
 
-  const profile = (session.participant_profiles as unknown as
-    | { display_name: string; gender: string; age_range: string; consent_at: string }[]
-    | null)?.[0]
-  const test = session.tests as unknown as { slug: string; name_ko: string } | null
+  // PostgREST는 1:1(session_id PK) 관계를 단일 객체로 반환하지만 배열로 올
+   // 수도 있어 두 shape 모두 수용.
+  const profile = firstEmbed(
+    session.participant_profiles as unknown as
+      | {
+          display_name: string
+          gender: string
+          age_range: string
+          consent_at: string
+        }
+      | {
+          display_name: string
+          gender: string
+          age_range: string
+          consent_at: string
+        }[]
+      | null,
+  )
+  const test = firstEmbed(
+    session.tests as unknown as
+      | { slug: string; name_ko: string }
+      | { slug: string; name_ko: string }[]
+      | null,
+  )
 
   const { data: results } = await db
     .from('results')

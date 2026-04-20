@@ -1,5 +1,6 @@
 import { createServiceClient } from '@temperament/db'
 import type { Gender, AgeRange } from '@temperament/db'
+import { firstEmbed } from '@/lib/supabase-embed'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -95,6 +96,15 @@ export async function GET(request: Request) {
   ]
 
   const lines = [headers.map(csvEscape).join(',')]
+  type Profile = {
+    display_name: string
+    gender: string
+    age_range: string
+  }
+  type Result = {
+    raw_scores: Record<string, number> | null
+    percentiles: Record<string, number> | null
+  }
   for (const r of rows as unknown as Array<{
     id: string
     started_at: string
@@ -102,17 +112,18 @@ export async function GET(request: Request) {
     paid_at: string | null
     payment_amount: number | null
     coupon_code: string | null
-    tests: { slug: string; name_ko: string } | null
-    participant_profiles: { display_name: string; gender: string; age_range: string }[]
-    results: { raw_scores: Record<string, number> | null; percentiles: Record<string, number> | null }[] | null
+    tests: { slug: string; name_ko: string } | { slug: string; name_ko: string }[] | null
+    participant_profiles: Profile | Profile[] | null
+    results: Result | Result[] | null
   }>) {
-    const profile = r.participant_profiles[0]
+    const profile = firstEmbed(r.participant_profiles)
+    const test = firstEmbed(r.tests)
     const status = r.paid_at
       ? '결제완료'
       : r.completed_at
         ? '검사완료'
         : '진행중'
-    const pct = r.results?.[0]?.percentiles ?? null
+    const pct = firstEmbed(r.results)?.percentiles ?? null
     lines.push(
       [
         fmtDate(r.started_at),
@@ -121,7 +132,7 @@ export async function GET(request: Request) {
         profile?.display_name ?? '',
         profile ? (GENDER_LABEL[profile.gender] ?? profile.gender) : '',
         profile ? (AGE_LABEL[profile.age_range] ?? profile.age_range) : '',
-        r.tests?.name_ko ?? r.tests?.slug ?? '',
+        test?.name_ko ?? test?.slug ?? '',
         status,
         r.paid_at ? String(r.payment_amount ?? 0) : '',
         r.coupon_code ?? '',
