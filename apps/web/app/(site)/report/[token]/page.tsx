@@ -1,9 +1,32 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { z } from 'zod'
 import { createServiceClient } from '@temperament/db'
 import { getTestById } from '@temperament/tests'
+import { InterpretationSchema } from '@temperament/ai'
 import { ReportView, type ReportPayload, type FactorMetaLite } from './ReportView'
+
+// Loose fallback for legacy interpretations whose shape diverged from the
+// current zod schema (e.g. odd factor records, stringified arrays). If the
+// strict schema fails, we still want to render the overall/factors/suggestions
+// the user paid for — lifeFit / practiceLead come back via the "다시 생성" banner.
+//
+// Suggestions in old caches are plain strings; they get lifted into
+// { text } objects here to match the post-upgrade UI type.
+const LegacySuggestionSchema = z.preprocess(
+  (v) => (typeof v === 'string' ? { text: v } : v),
+  z.object({
+    text: z.string(),
+    linkedFactor: z.string().optional(),
+    why: z.string().optional(),
+  }),
+)
+const LegacyInterpretationSchema = z.object({
+  overall: z.string(),
+  factors: z.record(z.string(), z.string()),
+  suggestions: z.array(LegacySuggestionSchema),
+})
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -94,11 +117,26 @@ export default async function ReportPage({
   let cached: ReportPayload | null = null
   if (results?.ai_interpretation) {
     try {
-      cached = {
-        rawScores: results.raw_scores as Record<string, number>,
-        percentiles: results.percentiles as Record<string, number>,
-        interpretation: JSON.parse(results.ai_interpretation),
-        citations: (results.citations as ReportPayload['citations']) ?? [],
+      const raw = JSON.parse(results.ai_interpretation)
+      const strict = InterpretationSchema.safeParse(raw)
+      if (strict.success) {
+        cached = {
+          rawScores: results.raw_scores as Record<string, number>,
+          percentiles: results.percentiles as Record<string, number>,
+          interpretation: strict.data,
+          citations: (results.citations as ReportPayload['citations']) ?? [],
+        }
+      } else {
+        const loose = LegacyInterpretationSchema.safeParse(raw)
+        if (loose.success) {
+          cached = {
+            rawScores: results.raw_scores as Record<string, number>,
+            percentiles: results.percentiles as Record<string, number>,
+            // lifeFit intentionally undefined — UI shows the regenerate banner.
+            interpretation: { ...loose.data },
+            citations: (results.citations as ReportPayload['citations']) ?? [],
+          }
+        }
       }
     } catch (e) {
       console.error('report: cached interpretation parse failed', e)

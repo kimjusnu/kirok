@@ -13,10 +13,29 @@ type Paper = {
   inline: string
 }
 type FactorCitations = { factorId: string; papers: Paper[] }
+type CareerCard = { title: string; reason: string; fit?: number }
+type HobbyCard = { title: string; reason: string; fit?: number }
+type LifeFit = {
+  careers: CareerCard[]
+  hobbies: HobbyCard[]
+  narrative: string
+}
+type SuggestionItem = {
+  text: string
+  linkedFactor?: string
+  why?: string
+}
 type Interpretation = {
   overall: string
   factors: Record<string, string>
-  suggestions: string[]
+  // Structured: each suggestion may carry a linkedFactor id + a "why for you"
+  // sentence. Legacy reports are rehydrated from plain strings server-side
+  // (see packages/ai SuggestionSchema preprocess).
+  suggestions: SuggestionItem[]
+  // Optional — legacy reports generated before the Life Fit rollout will
+  // not include it; the UI then shows a "regenerate" banner.
+  lifeFit?: LifeFit
+  practiceLead?: string
 }
 export type ReportPayload = {
   rawScores: Record<string, number>
@@ -78,6 +97,56 @@ function levelLabel(percentile: number): string {
   return '매우 낮음'
 }
 
+// 1~5 dots — filled for `value`, faded for the rest.
+// Uses ● glyphs so it survives black-and-white print without Tailwind colors.
+function FitBadge({ value }: { value: number }) {
+  const v = Math.max(1, Math.min(5, Math.round(value)))
+  return (
+    <span
+      aria-label={`적합도 ${v}/5`}
+      title={`적합도 ${v}/5`}
+      className="shrink-0 font-mono text-[10px] tracking-widest text-[var(--ink-soft)] leading-none pt-1"
+    >
+      <span>{'●'.repeat(v)}</span>
+      <span className="opacity-25">{'●'.repeat(5 - v)}</span>
+    </span>
+  )
+}
+
+function LifeFitCardList({
+  title,
+  cards,
+}: {
+  title: string
+  cards: Array<CareerCard | HobbyCard>
+}) {
+  return (
+    <div className="mt-8">
+      <h3 className="text-[11px] tracking-[0.2em] uppercase text-[var(--ink-soft)]">
+        {title}
+      </h3>
+      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 print:grid-cols-2">
+        {cards.map((c, i) => (
+          <article
+            key={`${c.title}-${i}`}
+            className="border border-[var(--line)] bg-[var(--line-soft)] p-5 hover:border-[var(--ink)] transition-colors print:break-inside-avoid"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <h4 className="text-[15px] font-semibold leading-tight">
+                {c.title}
+              </h4>
+              {typeof c.fit === 'number' && <FitBadge value={c.fit} />}
+            </div>
+            <p className="mt-3 text-[13px] text-[var(--ink-muted)] leading-relaxed">
+              {c.reason}
+            </p>
+          </article>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export function ReportView({
   sessionId,
   testNameKo,
@@ -102,48 +171,57 @@ export function ReportView({
   // succeeded. Also prevents concurrent manual retries.
   const inFlightRef = useRef(false)
 
-  const callGenerate = useCallback(async (): Promise<
-    { ok: true; data: ReportPayload } | { ok: false; message: string }
-  > => {
-    try {
-      const res = await fetch('/api/results/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId }),
-      })
-      const body = await res.json()
-      if (!res.ok) {
-        return { ok: false, message: friendlyError(body) }
+  const callGenerate = useCallback(
+    async (
+      options: { force?: boolean } = {},
+    ): Promise<
+      { ok: true; data: ReportPayload } | { ok: false; message: string }
+    > => {
+      try {
+        const res = await fetch('/api/results/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId, force: options.force ?? false }),
+        })
+        const body = await res.json()
+        if (!res.ok) {
+          return { ok: false, message: friendlyError(body) }
+        }
+        return {
+          ok: true,
+          data: {
+            rawScores: body.rawScores,
+            percentiles: body.percentiles,
+            interpretation: body.interpretation,
+            citations: body.citations,
+          },
+        }
+      } catch (e) {
+        return {
+          ok: false,
+          message: e instanceof Error ? e.message : 'generate_failed',
+        }
       }
-      return {
-        ok: true,
-        data: {
-          rawScores: body.rawScores,
-          percentiles: body.percentiles,
-          interpretation: body.interpretation,
-          citations: body.citations,
-        },
-      }
-    } catch (e) {
-      return {
-        ok: false,
-        message: e instanceof Error ? e.message : 'generate_failed',
-      }
-    }
-  }, [sessionId])
+    },
+    [sessionId],
+  )
 
   const generate = useCallback(
-    async (options: { silentRetry?: boolean } = { silentRetry: true }) => {
+    async (
+      options: { silentRetry?: boolean; force?: boolean } = {
+        silentRetry: true,
+      },
+    ) => {
       if (inFlightRef.current) return
       inFlightRef.current = true
       setState({ kind: 'loading' })
       try {
-        let attempt = await callGenerate()
+        let attempt = await callGenerate({ force: options.force })
         if (!attempt.ok && options.silentRetry) {
           // Absorb transient Gemini/OpenAlex flakes — retry once after a brief
           // pause before surfacing the error to the user.
           await new Promise((r) => setTimeout(r, 1500))
-          attempt = await callGenerate()
+          attempt = await callGenerate({ force: options.force })
         }
         if (attempt.ok) {
           setState({ kind: 'ready', data: attempt.data })
@@ -364,23 +442,92 @@ export function ReportView({
         </div>
       </section>
 
+      {data.interpretation.lifeFit && (
+        <section className="mt-16">
+          <p className="text-[11px] tracking-[0.2em] uppercase text-[var(--ink-soft)]">
+            03. Life Fit
+          </p>
+          <h2 className="mt-3 text-xl font-semibold">직업 · 취미의 지도</h2>
+          <p className="mt-2 text-[13px] text-[var(--ink-soft)] leading-relaxed">
+            점수의 조합에서 파생된 제안입니다. 정답이 아니라 나침반으로 읽어 주세요.
+          </p>
+
+          <LifeFitCardList
+            title="Careers"
+            cards={data.interpretation.lifeFit.careers}
+          />
+          <LifeFitCardList
+            title="Hobbies"
+            cards={data.interpretation.lifeFit.hobbies}
+          />
+
+          {data.interpretation.lifeFit.narrative && (
+            <div className="mt-10 pl-5 border-l-2 border-[var(--ink)]">
+              <p className="prose-editorial text-[15px] whitespace-pre-wrap">
+                {data.interpretation.lifeFit.narrative}
+              </p>
+            </div>
+          )}
+        </section>
+      )}
+
       {data.interpretation.suggestions.length > 0 && (
         <section className="mt-16">
           <p className="text-[11px] tracking-[0.2em] uppercase text-[var(--ink-soft)]">
-            03. Practice
+            {data.interpretation.lifeFit ? '04' : '03'}. Practice
           </p>
           <h2 className="mt-3 text-xl font-semibold">시도해 볼 만한 것</h2>
-          <ol className="mt-6 space-y-5">
-            {data.interpretation.suggestions.map((s, i) => (
-              <li key={i} className="flex gap-4">
-                <span className="font-mono text-xs text-[var(--ink-soft)] pt-1">
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-                <p className="prose-editorial text-[15px] flex-1">{s}</p>
-              </li>
-            ))}
+          {data.interpretation.practiceLead && (
+            <p className="mt-3 text-[13px] text-[var(--ink-soft)] leading-relaxed">
+              {data.interpretation.practiceLead}
+            </p>
+          )}
+          <ol className="mt-6 space-y-6">
+            {data.interpretation.suggestions.map((s, i) => {
+              const factorName =
+                s.linkedFactor
+                  ? factors.find((f) => f.id === s.linkedFactor)?.nameKo
+                  : undefined
+              return (
+                <li key={i} className="flex gap-4">
+                  <span className="font-mono text-xs text-[var(--ink-soft)] pt-1">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    {factorName && (
+                      <span className="inline-block mb-2 px-2 py-0.5 text-[10px] tracking-[0.15em] uppercase border border-[var(--line)] text-[var(--ink-soft)]">
+                        {factorName}
+                      </span>
+                    )}
+                    <p className="prose-editorial text-[15px]">{s.text}</p>
+                    {s.why && (
+                      <p className="mt-2 pl-3 border-l border-[var(--line)] text-[12px] text-[var(--ink-muted)] leading-relaxed">
+                        왜 당신에게? {s.why}
+                      </p>
+                    )}
+                  </div>
+                </li>
+              )
+            })}
           </ol>
         </section>
+      )}
+
+      {!data.interpretation.lifeFit && (
+        <div className="mt-12 no-print border border-[var(--line)] bg-[var(--line-soft)] p-5 text-[13px] text-[var(--ink-muted)] leading-relaxed">
+          <p>
+            이전 버전에서 생성된 리포트예요. 새 버전에서는{' '}
+            <strong className="text-[var(--ink)]">직업 · 취미 제안</strong>과{' '}
+            더 깊어진 요인 해석이 함께 제공됩니다.
+          </p>
+          <button
+            type="button"
+            onClick={() => void generate({ silentRetry: true, force: true })}
+            className="mt-3 link-underline font-medium text-[var(--ink)]"
+          >
+            지금 다시 생성하기 →
+          </button>
+        </div>
       )}
 
       <div className="mt-16 no-print">

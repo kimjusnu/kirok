@@ -10,7 +10,13 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
 
-const RequestSchema = z.object({ sessionId: z.string().uuid() })
+const RequestSchema = z.object({
+  sessionId: z.string().uuid(),
+  // When true, skip the cached interpretation and run Gemini again.
+  // Used by the "다시 생성하기" banner for legacy reports that were produced
+  // before the lifeFit (careers/hobbies) schema existed.
+  force: z.boolean().optional(),
+})
 
 export async function POST(request: Request) {
   let payload: unknown
@@ -23,7 +29,7 @@ export async function POST(request: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: 'invalid_request' }, { status: 400 })
   }
-  const { sessionId } = parsed.data
+  const { sessionId, force } = parsed.data
 
   const db = createServiceClient()
 
@@ -55,12 +61,14 @@ export async function POST(request: Request) {
   }
 
   // Serve cached result if present — idempotent re-generation.
+  // `force` bypasses the cache so the user can upgrade a legacy interpretation
+  // (missing lifeFit/careers) to the current schema.
   const { data: cached } = await db
     .from('results')
     .select('raw_scores, percentiles, ai_interpretation, citations, generated_at')
     .eq('session_id', sessionId)
     .maybeSingle()
-  if (cached?.ai_interpretation) {
+  if (!force && cached?.ai_interpretation) {
     return NextResponse.json({
       cached: true,
       rawScores: cached.raw_scores,
