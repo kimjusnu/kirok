@@ -74,8 +74,9 @@ function SiteFooter({ adminBase }: { adminBase: string }) {
           </Link>
         </nav>
 
-        {/* 전자상거래법·플랫폼 입점 심사 기준 사업자 정보. 표시 항목:
-            상호명 · 대표자명 · 사업자등록번호 · 사업장 주소 · 전화 · 이메일. */}
+        {/* 전자상거래법·플랫폼 심사에 필요한 최소 사업자 정보만 노출.
+            연락처·이메일은 개인정보처리방침 페이지에서 별도 표기.
+            통신판매번호는 값이 있을 때만 표시 — 신고 전에는 줄 자체가 숨겨짐. */}
         <dl className="mt-5 flex flex-col gap-y-1 text-[11px] text-left">
           <div>
             <dt className="inline text-[var(--ink-muted)]">상호 </dt>
@@ -89,17 +90,15 @@ function SiteFooter({ adminBase }: { adminBase: string }) {
             <dt className="inline text-[var(--ink-muted)]">사업자등록번호 </dt>
             <dd className="inline">{b.businessRegistrationNumber}</dd>
           </div>
+          {b.mailOrderSalesRegistrationNumber && (
+            <div>
+              <dt className="inline text-[var(--ink-muted)]">통신판매번호 </dt>
+              <dd className="inline">{b.mailOrderSalesRegistrationNumber}</dd>
+            </div>
+          )}
           <div>
             <dt className="inline text-[var(--ink-muted)]">사업장 주소 </dt>
             <dd className="inline">{b.address}</dd>
-          </div>
-          <div>
-            <dt className="inline text-[var(--ink-muted)]">전화 </dt>
-            <dd className="inline">{b.phone}</dd>
-          </div>
-          <div>
-            <dt className="inline text-[var(--ink-muted)]">이메일 </dt>
-            <dd className="inline">{b.email}</dd>
           </div>
         </dl>
 

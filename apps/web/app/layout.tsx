@@ -119,8 +119,8 @@ const JSON_LD_GRAPH = {
         height: 512,
       },
       founder: { '@type': 'Person', name: '김준수' },
-      foundingDate: '2026-04-20',
-      taxID: '507-06-66733',
+      foundingDate: '2026-04-24',
+      taxID: '412-09-65266',
       knowsAbout: [
         'Big Five personality model',
         'Five-Factor Model',
@@ -235,7 +235,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body className="bg-white text-[var(--ink)]">
+      <body className="text-[var(--ink)]">
         {children}
         <script
           type="application/ld+json"
