@@ -235,10 +235,32 @@ export function PaymentClient({
             <input
               type="text"
               value={customInput}
-              onChange={(e) => setCustomInput(e.target.value.toUpperCase())}
-              placeholder="코드 입력"
-              className="flex-1 px-3 py-2.5 border border-[var(--line)] focus:border-[var(--ink)] outline-none text-sm font-mono tracking-wide transition"
+              // 쿠폰 코드는 영문 A-Z와 숫자 0-9만 허용. 한글/공백/특수문자는
+              // 입력 즉시 제거하고, 소문자는 대문자로 자동 변환. 한글 IME
+              // 조합이 끝난 뒤에도 잔여 문자가 남지 않도록 onCompositionEnd
+              // 에서 한 번 더 필터링한다.
+              onChange={(e) => {
+                const next = e.target.value
+                  .toUpperCase()
+                  .replace(/[^A-Z0-9]/g, '')
+                setCustomInput(next)
+              }}
+              onCompositionEnd={(e) => {
+                const next = e.currentTarget.value
+                  .toUpperCase()
+                  .replace(/[^A-Z0-9]/g, '')
+                setCustomInput(next)
+              }}
+              placeholder="예: LAUNCH1500"
+              className="flex-1 px-3 py-2.5 border border-[var(--line)] focus:border-[var(--ink)] outline-none text-sm font-mono tracking-wide uppercase transition"
               aria-label="기타 쿠폰 코드"
+              inputMode="latin"
+              lang="en"
+              autoCapitalize="characters"
+              autoCorrect="off"
+              spellCheck={false}
+              pattern="[A-Z0-9]+"
+              maxLength={32}
             />
             <button
               type="button"
