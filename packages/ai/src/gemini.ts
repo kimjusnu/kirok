@@ -26,12 +26,55 @@ export interface GeminiFailure {
 
 export type GeminiResult = GeminiSuccess | GeminiFailure
 
+export const CareerCardSchema = z.object({
+  title: z.string().min(1),
+  reason: z.string().min(1),
+  fit: z.number().int().min(1).max(5).optional(),
+})
+export const HobbyCardSchema = z.object({
+  title: z.string().min(1),
+  reason: z.string().min(1),
+  fit: z.number().int().min(1).max(5).optional(),
+})
+export const LifeFitSchema = z.object({
+  careers: z.array(CareerCardSchema).min(3).max(7),
+  hobbies: z.array(HobbyCardSchema).min(3).max(7),
+  narrative: z.string().min(1),
+})
+
+// A single "try this week" action. `linkedFactor` (one of openness /
+// conscientiousness / extraversion / agreeableness / neuroticism) + `why`
+// anchor the suggestion to the user's score vector so the Practice section
+// reads as "because of your X, try Y" instead of generic advice.
+export const SuggestionItemSchema = z.object({
+  text: z.string().min(1),
+  linkedFactor: z.string().min(1).optional(),
+  why: z.string().min(1).optional(),
+})
+// Legacy reports stored suggestions as plain strings. `preprocess` lifts each
+// string into {text} before validation so old cached interpretations keep
+// rendering after the schema change.
+export const SuggestionSchema = z.preprocess(
+  (v) => (typeof v === 'string' ? { text: v } : v),
+  SuggestionItemSchema,
+)
+
 export const InterpretationSchema = z.object({
   overall: z.string().min(1),
   factors: z.record(z.string(), z.string().min(1)),
-  suggestions: z.array(z.string().min(1)),
+  suggestions: z.array(SuggestionSchema),
+  // Optional so legacy cached interpretations (pre-Life-Fit) still parse.
+  lifeFit: LifeFitSchema.optional(),
+  // Optional one-line lead shown above the Practice list (e.g. "당신의 상위
+  // 두 요인과 맞닿은 한 주짜리 실험이에요"). Gemini may omit it for legacy
+  // callers.
+  practiceLead: z.string().min(1).optional(),
 })
 export type Interpretation = z.infer<typeof InterpretationSchema>
+export type CareerCard = z.infer<typeof CareerCardSchema>
+export type HobbyCard = z.infer<typeof HobbyCardSchema>
+export type LifeFit = z.infer<typeof LifeFitSchema>
+export type SuggestionItem = z.infer<typeof SuggestionItemSchema>
 
 const DEFAULT_MODEL = 'gemini-2.5-flash'
 

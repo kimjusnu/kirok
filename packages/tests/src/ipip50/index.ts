@@ -15,7 +15,7 @@ export const IPIP50_TEST: TestDefinition = {
   scaleType: 'likert5',
   translation: {
     status: 'preliminary',
-    note: '한국어 번역은 참고용 자체 번역이며 공식 타당화 절차를 거치지 않았습니다. 학술·임상 목적에는 정식 한국어 검증본 사용을 권장합니다.',
+    note: '한국어·영어 문항은 2026년 저자 개정본으로, IPIP 공개 원문의 5요인 facet 구조(요인 매핑·역채점)를 유지한 상태에서 구체적 장면 중심으로 재작성되었습니다. 학술·임상 목적에는 정식 한국어 검증본 사용을 권장합니다.',
   },
   source:
     'Goldberg, L. R. (1992). The development of markers for the Big-Five factor structure. Psychological Assessment, 4(1), 26-42. Public domain items: https://ipip.ori.org/newBigFive5broadKey.htm',

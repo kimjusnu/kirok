@@ -2,19 +2,27 @@ import type { TestItem } from '../types'
 
 /**
  * IPIP Big-Five Factor Markers (50 items, Goldberg 1992).
- * English items: public domain. Source: https://ipip.ori.org/newBigFive5broadKey.htm
- * Korean: 저자 번역 (preliminary, 심리측정 타당화 미완료).
  *
- * Scoring direction: items are coded from the perspective of their factor.
- * reverseScored=true means high Likert response indicates LOW factor score.
- * Example: "I am relaxed most of the time" is reverse for Neuroticism.
+ * Factor mapping and reverse-keying follow the public-domain IPIP-50 key
+ * (https://ipip.ori.org/newBigFive5broadKey.htm). Those structural attributes
+ * — id, order, factor, facet, reverseScored — are kept intact so the Goldberg
+ * normative table (packages/tests/src/ipip50/metadata.ts) remains valid.
+ *
+ * English and Korean wording is the 2026 author revision: the original IPIP
+ * stems were rewritten into concrete, scene-based sentences so the 50 items
+ * feel less repetitive. Each item still captures the same facet as its source
+ * (e.g. an Extraversion gregariousness item stays a gregariousness item),
+ * just dressed in a specific situation.
+ *
+ * reverseScored=true means a HIGH Likert response indicates a LOW factor
+ * score. For example, a reverse-keyed Neuroticism item describes *calm*.
  */
 export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-1',
     order: 1,
-    textEn: 'I am the life of the party.',
-    textKo: '나는 모임에서 분위기를 띄우는 사람이다.',
+    textEn: 'At gatherings I naturally end up pulling people into the conversation.',
+    textKo: '모임에 가면 어느새 내가 사람들을 대화로 끌어들이고 있다.',
     factor: 'extraversion',
     facet: 'extraversion',
     reverseScored: false,
@@ -23,8 +31,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-2',
     order: 2,
-    textEn: 'I feel little concern for others.',
-    textKo: '나는 다른 사람에게 별로 관심이 없다.',
+    textEn: "I have a hard time caring what's going on in other people's lives — I'd rather just finish my own work.",
+    textKo: '다른 사람이 겪는 일보다는 내 할 일을 빨리 끝내는 쪽에 마음이 가 있다.',
     factor: 'agreeableness',
     facet: 'agreeableness',
     reverseScored: true,
@@ -33,8 +41,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-3',
     order: 3,
-    textEn: 'I am always prepared.',
-    textKo: '나는 항상 준비가 되어 있다.',
+    textEn: 'The night before something important, I quietly go through everything one more time.',
+    textKo: '중요한 일 전날 밤, 나는 혼자 마지막으로 한 번 더 점검한다.',
     factor: 'conscientiousness',
     facet: 'conscientiousness',
     reverseScored: false,
@@ -43,8 +51,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-4',
     order: 4,
-    textEn: 'I get stressed out easily.',
-    textKo: '나는 쉽게 스트레스를 받는다.',
+    textEn: 'When something unexpected hits, I feel it tighten in my chest before I can think.',
+    textKo: '예상 밖의 일이 생기면 생각보다 가슴 위쪽이 먼저 뻐근해진다.',
     factor: 'neuroticism',
     facet: 'neuroticism',
     reverseScored: false,
@@ -53,8 +61,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-5',
     order: 5,
-    textEn: 'I have a rich vocabulary.',
-    textKo: '나는 어휘력이 풍부하다.',
+    textEn: 'I keep a small mental list of words I love and pull them out when they fit.',
+    textKo: '내가 좋아하는 단어들을 머릿속 한 편에 모아두고, 맞는 자리에 꺼내 쓴다.',
     factor: 'openness',
     facet: 'openness',
     reverseScored: false,
@@ -63,8 +71,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-6',
     order: 6,
-    textEn: "I don't talk a lot.",
-    textKo: '나는 말수가 적은 편이다.',
+    textEn: 'In a group of six or more I tend to listen far more than I speak.',
+    textKo: '여섯 명 이상이 모인 자리에서는 말하기보다 듣는 쪽이 편하다.',
     factor: 'extraversion',
     facet: 'extraversion',
     reverseScored: true,
@@ -73,8 +81,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-7',
     order: 7,
-    textEn: 'I am interested in people.',
-    textKo: '나는 사람들에게 관심이 많다.',
+    textEn: 'When a stranger starts telling me about themselves, I find myself leaning in without realizing it.',
+    textKo: '처음 만난 사람이 자기 이야기를 시작하면 나도 모르게 몸이 그쪽으로 기운다.',
     factor: 'agreeableness',
     facet: 'agreeableness',
     reverseScored: false,
@@ -83,8 +91,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-8',
     order: 8,
-    textEn: 'I leave my belongings around.',
-    textKo: '나는 물건을 아무데나 놓아두는 편이다.',
+    textEn: "Opening my bag, I often find yesterday's receipts tangled with my water bottle.",
+    textKo: '가방을 열면 어제 넣어둔 영수증과 텀블러가 뒤엉켜 있을 때가 많다.',
     factor: 'conscientiousness',
     facet: 'conscientiousness',
     reverseScored: true,
@@ -93,8 +101,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-9',
     order: 9,
-    textEn: 'I am relaxed most of the time.',
-    textKo: '나는 대부분 편안한 상태이다.',
+    textEn: "Even when things go sideways, the 'okay, let's try' feeling comes back to me pretty fast.",
+    textKo: '일이 꼬여도 "그래, 한 번 해보자" 하는 감각이 금방 돌아온다.',
     factor: 'neuroticism',
     facet: 'neuroticism',
     reverseScored: true,
@@ -103,8 +111,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-10',
     order: 10,
-    textEn: 'I have difficulty understanding abstract ideas.',
-    textKo: '나는 추상적인 개념을 이해하기 어렵다.',
+    textEn: 'Stories that live only in pure theory or metaphor wear me out quickly.',
+    textKo: '순수 이론이나 비유로만 풀리는 이야기는 금방 피곤해진다.',
     factor: 'openness',
     facet: 'openness',
     reverseScored: true,
@@ -113,8 +121,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-11',
     order: 11,
-    textEn: 'I feel comfortable around people.',
-    textKo: '나는 사람들과 있을 때 편안함을 느낀다.',
+    textEn: 'Even when an extra friend joins, I feel the gathering gets warmer rather than harder.',
+    textKo: '약속 자리에 친구가 한 명 더 붙어도 분위기가 더 따뜻해진다고 느낀다.',
     factor: 'extraversion',
     facet: 'extraversion',
     reverseScored: false,
@@ -123,8 +131,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-12',
     order: 12,
-    textEn: 'I insult people.',
-    textKo: '나는 다른 사람에게 모욕적인 말을 하는 편이다.',
+    textEn: "There are times I say something I know will sting, and I say it anyway.",
+    textKo: '찌르는 말이 될 줄 알면서도 그냥 내뱉어 버리는 순간이 있다.',
     factor: 'agreeableness',
     facet: 'agreeableness',
     reverseScored: true,
@@ -133,8 +141,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-13',
     order: 13,
-    textEn: 'I pay attention to details.',
-    textKo: '나는 세부사항에 주의를 기울인다.',
+    textEn: 'The last minute before sending a document, I spend hunting down a single typo.',
+    textKo: '문서를 보내기 직전 마지막 1분은 오탈자 하나를 찾는 데 쓴다.',
     factor: 'conscientiousness',
     facet: 'conscientiousness',
     reverseScored: false,
@@ -143,8 +151,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-14',
     order: 14,
-    textEn: 'I worry about things.',
-    textKo: '나는 이것저것 자주 걱정한다.',
+    textEn: 'Small things I said during the day loop back in my head when I try to sleep.',
+    textKo: '잠들려고 누우면 낮에 한 말 한 마디가 머릿속에서 다시 감긴다.',
     factor: 'neuroticism',
     facet: 'neuroticism',
     reverseScored: false,
@@ -153,8 +161,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-15',
     order: 15,
-    textEn: 'I have a vivid imagination.',
-    textKo: '나는 상상력이 풍부하다.',
+    textEn: "Walking familiar streets, I sometimes drift into elaborate 'what if' scenarios in my head.",
+    textKo: '익숙한 길을 걷다가도 머릿속에서 "만약에"로 시작하는 장면이 길게 펼쳐진다.',
     factor: 'openness',
     facet: 'openness',
     reverseScored: false,
@@ -163,8 +171,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-16',
     order: 16,
-    textEn: 'I keep in the background.',
-    textKo: '나는 눈에 띄지 않게 있는 편이다.',
+    textEn: 'When choosing a seat in a meeting room, my eyes instinctively go to the edge.',
+    textKo: '회의실 자리를 고를 때 나도 모르게 가장자리 쪽부터 눈이 간다.',
     factor: 'extraversion',
     facet: 'extraversion',
     reverseScored: true,
@@ -173,8 +181,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-17',
     order: 17,
-    textEn: "I sympathize with others' feelings.",
-    textKo: '나는 다른 사람의 감정에 공감한다.',
+    textEn: "A shift in a friend's tone is enough for me to read the feeling underneath.",
+    textKo: '친구 목소리 톤만 살짝 바뀌어도 그 밑에 깔린 기분이 금방 읽힌다.',
     factor: 'agreeableness',
     facet: 'agreeableness',
     reverseScored: false,
@@ -183,8 +191,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-18',
     order: 18,
-    textEn: 'I make a mess of things.',
-    textKo: '나는 일을 엉망으로 만드는 편이다.',
+    textEn: 'When I start one task, two others stay half-open in the background.',
+    textKo: '하나를 시작하면 다른 두 개는 반쯤 열어둔 채로 남아 있곤 한다.',
     factor: 'conscientiousness',
     facet: 'conscientiousness',
     reverseScored: true,
@@ -193,8 +201,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-19',
     order: 19,
-    textEn: 'I seldom feel blue.',
-    textKo: '나는 좀처럼 우울해하지 않는다.',
+    textEn: 'Even bad news tends to settle within a day and I find my usual footing again.',
+    textKo: '나쁜 소식이 와도 하루 안에 대부분 제자리로 돌아온다.',
     factor: 'neuroticism',
     facet: 'neuroticism',
     reverseScored: true,
@@ -203,8 +211,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-20',
     order: 20,
-    textEn: 'I am not interested in abstract ideas.',
-    textKo: '나는 추상적인 생각에 관심이 없다.',
+    textEn: 'If a book is nothing but philosophy, I put it down somewhere in the middle.',
+    textKo: '책이 철학 이야기로만 가득하면 중간쯤에서 덮어두게 된다.',
     factor: 'openness',
     facet: 'openness',
     reverseScored: true,
@@ -213,8 +221,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-21',
     order: 21,
-    textEn: 'I start conversations.',
-    textKo: '나는 먼저 대화를 시작한다.',
+    textEn: 'In an awkward elevator silence I tend to be the one who speaks up first.',
+    textKo: '엘리베이터에서 어색한 침묵이 흐르면 내가 먼저 한 마디를 건네는 편이다.',
     factor: 'extraversion',
     facet: 'extraversion',
     reverseScored: false,
@@ -223,8 +231,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-22',
     order: 22,
-    textEn: "I am not interested in other people's problems.",
-    textKo: '나는 다른 사람의 문제에 관심이 없다.',
+    textEn: "When a teammate's venting runs long, part of me starts wondering where the point is.",
+    textKo: '팀원의 하소연이 길어지면 "본론이 뭐지" 하는 생각부터 들기 시작한다.',
     factor: 'agreeableness',
     facet: 'agreeableness',
     reverseScored: true,
@@ -233,8 +241,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-23',
     order: 23,
-    textEn: 'I get chores done right away.',
-    textKo: '나는 해야 할 일을 바로 처리한다.',
+    textEn: 'As soon as I walk in the door, I sort the laundry and the receipts before I sit down.',
+    textKo: '집에 들어서자마자 빨래와 영수증부터 정리한 뒤에야 자리에 앉는다.',
     factor: 'conscientiousness',
     facet: 'conscientiousness',
     reverseScored: false,
@@ -243,8 +251,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-24',
     order: 24,
-    textEn: 'I am easily disturbed.',
-    textKo: '나는 쉽게 동요된다.',
+    textEn: 'When a car cuts in front of me, my heart keeps pounding long after the road clears.',
+    textKo: '옆 차가 갑자기 끼어들면 한참 뒤까지 심장 두근거림이 가라앉지 않는다.',
     factor: 'neuroticism',
     facet: 'neuroticism',
     reverseScored: false,
@@ -253,8 +261,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-25',
     order: 25,
-    textEn: 'I have excellent ideas.',
-    textKo: '나는 훌륭한 아이디어를 잘 떠올린다.',
+    textEn: 'An idea that pops up in the shower is worth writing down with wet hands.',
+    textKo: '샤워 중 떠오른 발상은 젖은 손으로라도 메모로 남긴다.',
     factor: 'openness',
     facet: 'openness',
     reverseScored: false,
@@ -263,8 +271,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-26',
     order: 26,
-    textEn: 'I have little to say.',
-    textKo: '나는 할 말이 별로 없는 편이다.',
+    textEn: "When I'm in a room full of new faces, my mouth just naturally stays closed.",
+    textKo: '처음 보는 사람들과 한 방에 있으면 입이 자연스레 다물어진다.',
     factor: 'extraversion',
     facet: 'extraversion',
     reverseScored: true,
@@ -273,8 +281,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-27',
     order: 27,
-    textEn: 'I have a soft heart.',
-    textKo: '나는 마음이 여린 편이다.',
+    textEn: 'Seeing an injured cat on the street stays with me through the rest of the evening.',
+    textKo: '길에서 다친 고양이를 보면 그날 저녁까지 마음이 쓰인다.',
     factor: 'agreeableness',
     facet: 'agreeableness',
     reverseScored: false,
@@ -283,8 +291,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-28',
     order: 28,
-    textEn: 'I often forget to put things back in their proper place.',
-    textKo: '나는 물건을 제자리에 두는 것을 자주 잊는다.',
+    textEn: 'My keys, wallet, or earbuds — one of them goes missing at least once a week.',
+    textKo: '차 키, 지갑, 에어팟 중 하나는 매주 한 번쯤 꼭 행방불명된다.',
     factor: 'conscientiousness',
     facet: 'conscientiousness',
     reverseScored: true,
@@ -293,8 +301,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-29',
     order: 29,
-    textEn: 'I get upset easily.',
-    textKo: '나는 쉽게 속상해한다.',
+    textEn: 'A single offhand comment can sit on my chest for the whole way home.',
+    textKo: '별일 아닌 한 마디에 퇴근길 내내 기분이 눌려 있을 때가 있다.',
     factor: 'neuroticism',
     facet: 'neuroticism',
     reverseScored: false,
@@ -303,8 +311,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-30',
     order: 30,
-    textEn: 'I do not have a good imagination.',
-    textKo: '나는 상상력이 풍부하지 않다.',
+    textEn: "'What if' questions exhaust me. 'What's the actual problem' is where I start.",
+    textKo: '"만약에"로 시작하는 질문보다 "지금 뭐가 문제야"가 훨씬 편하다.',
     factor: 'openness',
     facet: 'openness',
     reverseScored: true,
@@ -313,8 +321,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-31',
     order: 31,
-    textEn: 'I talk to a lot of different people at parties.',
-    textKo: '나는 파티에서 다양한 사람들과 대화를 나눈다.',
+    textEn: 'Walking into an event, I usually exchange names with three new faces within half an hour.',
+    textKo: '행사장에 들어서면 30분 안에 낯선 얼굴 셋 정도와는 이름을 주고받는다.',
     factor: 'extraversion',
     facet: 'extraversion',
     reverseScored: false,
@@ -323,8 +331,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-32',
     order: 32,
-    textEn: 'I am not really interested in others.',
-    textKo: '나는 다른 사람들에게 별로 관심이 없다.',
+    textEn: "I'd rather be the one asked about my week than the one asking.",
+    textKo: '내가 먼저 안부를 묻기보다는 질문 받는 쪽이 훨씬 편하다.',
     factor: 'agreeableness',
     facet: 'agreeableness',
     reverseScored: true,
@@ -333,8 +341,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-33',
     order: 33,
-    textEn: 'I like order.',
-    textKo: '나는 질서 있는 것을 좋아한다.',
+    textEn: 'When I buy a new notebook, I set it up my own way — cover to last page — before I start writing.',
+    textKo: '새 노트를 사면 표지부터 마지막 장까지 내 방식대로 정리해 두고 쓰기 시작한다.',
     factor: 'conscientiousness',
     facet: 'conscientiousness',
     reverseScored: false,
@@ -343,8 +351,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-34',
     order: 34,
-    textEn: 'I change my mood a lot.',
-    textKo: '나는 기분이 자주 바뀐다.',
+    textEn: 'A mood I started the morning with can flip by lunchtime after a single message.',
+    textKo: '아침에 좋던 기분이 점심 무렵 한 통의 메시지 때문에 확 뒤집히곤 한다.',
     factor: 'neuroticism',
     facet: 'neuroticism',
     reverseScored: false,
@@ -353,8 +361,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-35',
     order: 35,
-    textEn: 'I am quick to understand things.',
-    textKo: '나는 이해가 빠른 편이다.',
+    textEn: "Before I'm halfway through a manual for a new tool, my hand is already trying the buttons.",
+    textKo: '새 툴 설명서를 반도 읽기 전에 손이 먼저 버튼을 눌러보고 있다.',
     factor: 'openness',
     facet: 'openness',
     reverseScored: false,
@@ -363,8 +371,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-36',
     order: 36,
-    textEn: "I don't like to draw attention to myself.",
-    textKo: '나는 주목받는 것을 좋아하지 않는다.',
+    textEn: 'When applause turns toward me, my voice tends to waver at the ends of sentences.',
+    textKo: '박수가 나를 향해 쏟아지면 말끝이 자꾸 흔들린다.',
     factor: 'extraversion',
     facet: 'extraversion',
     reverseScored: true,
@@ -373,8 +381,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-37',
     order: 37,
-    textEn: 'I take time out for others.',
-    textKo: '나는 다른 사람을 위해 시간을 내준다.',
+    textEn: 'Even on a busy week, I manage a line or two back to a junior who asks for help.',
+    textKo: '바쁜 주에도 도움을 청하는 후배 메시지엔 한두 줄은 꼭 답장을 남긴다.',
     factor: 'agreeableness',
     facet: 'agreeableness',
     reverseScored: false,
@@ -383,8 +391,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-38',
     order: 38,
-    textEn: 'I shirk my duties.',
-    textKo: '나는 내 의무를 회피하는 편이다.',
+    textEn: "Between 'can wait' and 'can't wait,' I keep starting with whichever is easier.",
+    textKo: '미뤄도 되는 일과 미루면 안 되는 일 사이에서, 쉬운 쪽부터 시작하는 습관이 반복된다.',
     factor: 'conscientiousness',
     facet: 'conscientiousness',
     reverseScored: true,
@@ -393,8 +401,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-39',
     order: 39,
-    textEn: 'I have frequent mood swings.',
-    textKo: '나는 감정 기복이 심하다.',
+    textEn: "My friends ask 'what's going on with you today?' because my face shifts that visibly.",
+    textKo: '친구들이 "오늘 너 왜 그래" 하고 물어볼 만큼 하루 안에 얼굴색이 바뀐다.',
     factor: 'neuroticism',
     facet: 'neuroticism',
     reverseScored: false,
@@ -403,8 +411,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-40',
     order: 40,
-    textEn: 'I use difficult words.',
-    textKo: '나는 어려운 단어를 즐겨 사용한다.',
+    textEn: 'In conversation I often pause mid-sentence to hunt for the more accurate word.',
+    textKo: '대화 중 더 정확한 단어를 찾으려고 말끝을 잠시 늦출 때가 많다.',
     factor: 'openness',
     facet: 'openness',
     reverseScored: false,
@@ -413,8 +421,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-41',
     order: 41,
-    textEn: "I don't mind being the center of attention.",
-    textKo: '나는 주목받는 것을 꺼리지 않는다.',
+    textEn: "When it's my turn to stand in front of people, I roll my shoulders back and begin.",
+    textKo: '사람들 앞에 설 차례가 되면 어깨를 한 번 펴고 시작한다.',
     factor: 'extraversion',
     facet: 'extraversion',
     reverseScored: false,
@@ -423,8 +431,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-42',
     order: 42,
-    textEn: "I feel others' emotions.",
-    textKo: '나는 다른 사람의 감정을 잘 느낀다.',
+    textEn: 'Even without a word, I can read the mood from how my family opens the front door.',
+    textKo: '가족이 말 한 마디 안 해도 현관문 여는 소리에서 오늘 기분이 먼저 읽힌다.',
     factor: 'agreeableness',
     facet: 'agreeableness',
     reverseScored: false,
@@ -433,8 +441,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-43',
     order: 43,
-    textEn: 'I follow a schedule.',
-    textKo: '나는 정해진 일정을 따르는 편이다.',
+    textEn: 'If my morning routine slips by ten minutes, the whole day feels off-rhythm.',
+    textKo: '아침 루틴이 10분만 어긋나도 하루 전체 리듬이 맞지 않는 느낌이다.',
     factor: 'conscientiousness',
     facet: 'conscientiousness',
     reverseScored: false,
@@ -443,8 +451,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-44',
     order: 44,
-    textEn: 'I get irritated easily.',
-    textKo: '나는 쉽게 짜증을 낸다.',
+    textEn: "Within the three seconds an app takes to load, I've already sighed.",
+    textKo: '앱이 3초간 로딩되는 사이에 이미 내 입에서는 한숨이 먼저 나와 있다.',
     factor: 'neuroticism',
     facet: 'neuroticism',
     reverseScored: false,
@@ -453,8 +461,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-45',
     order: 45,
-    textEn: 'I spend time reflecting on things.',
-    textKo: '나는 여러 가지를 깊이 성찰하는 시간을 갖는다.',
+    textEn: 'On a walk, I suddenly find myself tracing back why I said what I said earlier.',
+    textKo: '산책 중 갑자기 "왜 내가 그 말을 그때 했지"로 거슬러 올라가는 생각에 잠긴다.',
     factor: 'openness',
     facet: 'openness',
     reverseScored: false,
@@ -463,8 +471,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-46',
     order: 46,
-    textEn: 'I am quiet around strangers.',
-    textKo: '나는 낯선 사람 앞에서는 조용한 편이다.',
+    textEn: "Even ordering at a café I haven't visited before, my words come out a little shorter.",
+    textKo: '처음 간 카페에서 주문할 때조차 말이 조금 짧아진다.',
     factor: 'extraversion',
     facet: 'extraversion',
     reverseScored: true,
@@ -473,8 +481,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-47',
     order: 47,
-    textEn: 'I make people feel at ease.',
-    textKo: '나는 다른 사람을 편안하게 해주는 편이다.',
+    textEn: "When a new person joins a group I'm in, I instinctively soften my voice and pace.",
+    textKo: '내가 있는 자리에 새로운 사람이 오면 나도 모르게 목소리와 말 속도를 낮춘다.',
     factor: 'agreeableness',
     facet: 'agreeableness',
     reverseScored: false,
@@ -483,8 +491,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-48',
     order: 48,
-    textEn: 'I am exacting in my work.',
-    textKo: '나는 일할 때 꼼꼼하다.',
+    textEn: "Even making a simple table, I can't move on if one column is the wrong width.",
+    textKo: '간단한 표를 만들 때도 셀 하나의 너비가 맞지 않으면 그걸 먼저 고쳐야 다음으로 넘어간다.',
     factor: 'conscientiousness',
     facet: 'conscientiousness',
     reverseScored: false,
@@ -493,8 +501,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-49',
     order: 49,
-    textEn: 'I often feel blue.',
-    textKo: '나는 자주 우울함을 느낀다.',
+    textEn: 'A few evenings a week, something heavy settles in for no clear reason.',
+    textKo: '이유 없이 마음 한쪽이 가라앉는 저녁이 한 주에 몇 번 찾아온다.',
     factor: 'neuroticism',
     facet: 'neuroticism',
     reverseScored: false,
@@ -503,8 +511,8 @@ export const IPIP50_ITEMS: TestItem[] = [
   {
     id: 'ipip50-50',
     order: 50,
-    textEn: 'I am full of ideas.',
-    textKo: '나는 아이디어가 풍부하다.',
+    textEn: 'In a meeting about one topic, my head is already two or three ideas down the branch.',
+    textKo: '하나의 주제를 다루는 회의 중에도 내 머릿속은 이미 두세 개의 파생 아이디어로 뻗어나간다.',
     factor: 'openness',
     facet: 'openness',
     reverseScored: false,

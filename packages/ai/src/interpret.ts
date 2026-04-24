@@ -108,7 +108,11 @@ export async function interpretScores(
     const model = chain[Math.min(attempt, chain.length - 1)]!
 
     const gemini = await generateContent(
-      { prompt, maxOutputTokens: 8192, temperature: 0.6 },
+      // Deeper overall (8–10 sentences), richer per-factor (7–9),
+      // plus the new lifeFit block (careers + hobbies + narrative).
+      // 12288 leaves room for reasoning headroom while staying well within
+      // the model's context budget.
+      { prompt, maxOutputTokens: 12288, temperature: 0.6 },
       {
         apiKey: deps.geminiApiKey,
         model,

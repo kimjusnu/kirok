@@ -53,6 +53,31 @@ describe('buildInterpretationPrompt', () => {
     expect(prompt).toContain('"suggestions"')
   })
 
+  it('asks for deeper overall (8~10) and per-factor (7~9) sentences', () => {
+    const prompt = buildInterpretationPrompt({ result, factors })
+    expect(prompt).toContain('8~10문장')
+    expect(prompt).toContain('7~9문장')
+  })
+
+  it('includes lifeFit structure and career/hobby guidance', () => {
+    const prompt = buildInterpretationPrompt({ result, factors })
+    expect(prompt).toContain('lifeFit')
+    expect(prompt).toContain('careers')
+    expect(prompt).toContain('hobbies')
+    expect(prompt).toContain('narrative')
+    // Psychological mapping guardrail must be present
+    expect(prompt).toContain('직업 보장 표현')
+    expect(prompt).toContain('상위 2')
+  })
+
+  it('asks for structured suggestions with linkedFactor and why', () => {
+    const prompt = buildInterpretationPrompt({ result, factors })
+    expect(prompt).toContain('practiceLead')
+    expect(prompt).toContain('linkedFactor')
+    expect(prompt).toContain('why')
+    expect(prompt).toContain('최소 3개 이상의 요인에 분산')
+  })
+
   it('lists provided papers under each factor with Korean citation tags', () => {
     const prompt = buildInterpretationPrompt({
       result,
