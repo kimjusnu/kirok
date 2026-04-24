@@ -8,10 +8,13 @@
   --ink: #18181b;
   --ink-muted: #52525b;
   --ink-soft: #a1a1aa;
-  --line: #e4e4e7;
-  --line-soft: #f4f4f5;
+  --line: #e7e3d9;
+  --line-soft: #f3eee4;
   --accent: #2563eb;
-  --bg: #ffffff;
+  /* Warm off-white paper tone that harmonises with the hero-bg.png aurora.
+     Keeps the "museum catalogue" feel running from top to bottom instead of
+     the hero floating on a flat white page. */
+  --bg: #fbf8f2;
 }
 
 html {
@@ -29,6 +32,14 @@ html {
 body {
   font-weight: 400;
   letter-spacing: -0.01em;
+  /* Whole-page paper grain — identical texture principle as the hero, so
+     when the reader scrolls past the hero the mood doesn't collapse into a
+     flat cream. Kept very quiet (opacity ~0.35 via alpha in SVG) so text
+     contrast is preserved. */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 320'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.35 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  background-size: 320px 320px;
+  background-repeat: repeat;
+  background-attachment: fixed;
 }
 
 h1, h2, h3 {
@@ -52,6 +63,42 @@ h1, h2, h3 {
   width: 100%;
   height: 1px;
   background: var(--line);
+}
+
+/* ============================================================
+ * Content paper — a clean white column that sits on top of the
+ * page's cream/grain background.
+ *
+ * Why this exists: the body grain made the overall mood warmer,
+ * but it also reduced body-text contrast. Wrapping the scrolling
+ * reading section in a near-opaque white card keeps the text
+ * crisp and pushes the grain out to the left/right gutters
+ * where it reads as "paper edge" instead of noise under the
+ * letters.
+ * ========================================================== */
+.content-paper {
+  max-width: 768px;         /* ~ max-w-3xl, slightly wider than max-w-2xl sections inside */
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.96);
+  /* subtle double-sided shadow so the card visibly floats above
+     the grain without looking heavy */
+  box-shadow:
+    0 1px 0 var(--line),
+    0 0 60px rgba(24, 24, 27, 0.05);
+  border-left: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+}
+
+@media (max-width: 780px) {
+  /* On narrow viewports the card goes edge-to-edge so the reading
+     column doesn't get squeezed. Grain then shows only at the top
+     and bottom seams between sections. */
+  .content-paper {
+    border-left: 0;
+    border-right: 0;
+    box-shadow: none;
+    background: rgba(255, 255, 255, 0.94);
+  }
 }
 
 .prose-editorial {
@@ -91,7 +138,11 @@ h1, h2, h3 {
   inset: 0;
   z-index: 0;
   overflow: hidden;
-  background: #ffffff;
+  background-color: #fafafa;
+  background-image: url('/hero-bg.png');
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
 }
 
 .hero-aurora {
