@@ -254,7 +254,7 @@ export function PaymentClient({
               placeholder="예: LAUNCH1500"
               className="flex-1 px-3 py-2.5 border border-[var(--line)] focus:border-[var(--ink)] outline-none text-sm font-mono tracking-wide uppercase transition"
               aria-label="기타 쿠폰 코드"
-              inputMode="latin"
+              inputMode="text"
               lang="en"
               autoCapitalize="characters"
               autoCorrect="off"
