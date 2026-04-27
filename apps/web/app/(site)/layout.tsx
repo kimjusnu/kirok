@@ -74,8 +74,8 @@ function SiteFooter({ adminBase }: { adminBase: string }) {
           </Link>
         </nav>
 
-        {/* 전자상거래법·플랫폼 심사에 필요한 최소 사업자 정보만 노출.
-            연락처·이메일은 개인정보처리방침 페이지에서 별도 표기.
+        {/* 전자상거래법·카카오페이/PG 입점 심사 기준 의무표시 항목.
+            연락 가능한 전화번호·이메일은 풋터에 직접 노출되어야 한다.
             통신판매번호는 값이 있을 때만 표시 — 신고 전에는 줄 자체가 숨겨짐. */}
         <dl className="mt-5 flex flex-col gap-y-1 text-[11px] text-left">
           <div>
@@ -99,6 +99,22 @@ function SiteFooter({ adminBase }: { adminBase: string }) {
           <div>
             <dt className="inline text-[var(--ink-muted)]">사업장 주소 </dt>
             <dd className="inline">{b.address}</dd>
+          </div>
+          <div>
+            <dt className="inline text-[var(--ink-muted)]">전화 </dt>
+            <dd className="inline">
+              <a href={`tel:${b.phone.replace(/-/g, '')}`} className="link-underline">
+                {b.phone}
+              </a>
+            </dd>
+          </div>
+          <div>
+            <dt className="inline text-[var(--ink-muted)]">이메일 </dt>
+            <dd className="inline">
+              <a href={`mailto:${b.email}`} className="link-underline">
+                {b.email}
+              </a>
+            </dd>
           </div>
         </dl>
 
